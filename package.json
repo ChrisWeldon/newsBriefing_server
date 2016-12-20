@@ -1,0 +1,14 @@
+{
+  "name": "triviabriefing",
+  "version": "1.0.0",
+  "description": "The server for Trivia Briefing trivia game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Chris Evans",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0"
+  }
+}
