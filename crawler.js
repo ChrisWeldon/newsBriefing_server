@@ -17,6 +17,7 @@ crawlWorldNews(function(){
   questions = tempQuestions;
 });
 
+
 function crawlWorldNews(callback){
   var pageToVisit = "https://www.reddit.com/r/worldnews/";
   console.log("Visiting page " + pageToVisit);
@@ -31,9 +32,8 @@ function crawlWorldNews(callback){
 
        var $ = cheerio.load(body);
        console.log("Page title:  " + $('title').text());
-       console.log("Was your word there: "+ searchForWord($, "deep"));
        collectInternalLinks($);
-       collectArticles($, callback());
+       collectArticles($, callback);
      }
   });
 }
@@ -78,17 +78,21 @@ function collectArticles($, callback) {
           console.log("Error: " + error);
         }
         // Check status code (200 is HTTP OK)
-        console.log("Status code: " + response.statusCode);
+        //console.log("Status code: " + response.statusCode);
         if(response.statusCode === 200) {
           // Parse the document body
           var tempTitle = {};
           var $ = cheerio.load(body);
-          var articleTitle = $('title').text();
-          console.log("ARTICLE Page title:  " + $('title').text());
-
+          var articleQInfo = parseTitle($('title').text());
+          //console.log("ARTICLE Page title:  " + $('title').text());
           tempTitle["link"] = url;
-          tempTitle["title"] = articleTitle;
-          tempQuestions.push(tempTitle);
+          tempTitle["title"] = articleQInfo["input"];
+          tempTitle["question"] = articleQInfo["question"];
+          tempTitle["answer"] = articleQInfo[0];
+          if(articleQInfo != []){
+            tempQuestions.push(tempTitle);
+          }
+
           if(cycleCount == surveySize){
             callback();
           }
@@ -98,14 +102,56 @@ function collectArticles($, callback) {
   });
 }
 
+function parseTitle(title){
+  var string = title;
+  var fills = [];
+  var returnArray = [];
+  //editing the string to make good title
+  if(title.indexOf("| ")> -1){
+    //console.log(string + " : FOUND ' | ' ");
+    string = string.slice(0 ,string.indexOf("| "));
+  }if(title.indexOf(" — ")> -1){
+    //console.log(string + " : FOUND ' — ' ");
+    string = string.slice(0 ,string.indexOf(" — "));
+  }if(title.indexOf(" - ")> -1){
+    //console.log(string + " : FOUND ' - ' ");
+    string = string.slice(0 ,string.indexOf(" - "));
+  }if(title.indexOf(" -- ")> -1){
+    //console.log(string + " : FOUND ' -- ' ");
+    string = "";
+  }
+  string = string.trim();
+
+  // ^([\w\-]+) = the first word in a line
+  // ^((?:\S+\s+){2}\S+).* = is true if there are more than three words
+  var firstWord = string.match(/^([\w\-]+)/);
+  if( firstWord == "who" || firstWord == "what" || firstWord == "where" || firstWord == "when" || firstWord == "why" || string.match(/^((?:\S+\s+){2}\S+).*/)== false){
+    string = "";
+  }
+  // (?!^)\b[A-Z]\S+  =  capital lettered word which is not the first word and a word containing more than one character
+  if(/(?!^)\b[A-Z]\S+/.test(string)){
+    fills = string.match(/(?!^)\b[A-Z]\S+/);
+    fills["question"] = string.slice(0, fills["index"]) + "*a" + string.slice(fills["index"]+fills[0].length, fills["input"].length);
+
+  }else{
+    fills = string.match(/^([\w\-]+)/);
+    fills["question"] = string.slice(0, fills["index"]) + "*a" + string.slice(fills["index"]+fills[0].length, fills["input"].length);
+  }
+  return fills;
+}
+
 app.use(express.static('public'));
 
 app.get("/qs/:qid", function(req, res){
   res.send(tempQuestions[req.params.qid]);
 });
 
+app.get("/qs", function(req, res){
+  res.send(tempQuestions);
+});
+
 app.get("/status", function(req, res){
-  res.send(status);
+  res.send({"state": SERVER_STATE});
 });
 
 
