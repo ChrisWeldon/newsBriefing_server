@@ -1,0 +1,19 @@
+doctype html
+head
+  title Multiple Answer
+  link(rel="stylesheet", href="../style.css")
+body
+  h1 Multiple Answer:
+  hr
+  div.maincontain
+    form(method="post")
+      p
+        br
+        label.qcontain #{question}
+        div.acontain
+          for i in options
+            input(type="checkbox", name="a",id="a"+i value=i)
+            -console.log(i);
+            label(for="a"+i) #{i}
+            br
+        input(type="submit")

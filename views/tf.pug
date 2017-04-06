@@ -1,0 +1,19 @@
+doctype html
+head
+  title True, False
+  link(rel="stylesheet", href="../style.css")
+body
+  h1 True, False:
+  hr
+  div.maincontain
+    form(method="post")
+      p
+        br
+        label.qcontain #{question}
+        div.acontain
+          input(type="radio", name="a", value="true")
+          label True
+          br
+          input(type="radio", name="a", value="false")
+          label False
+        input(type="submit")
