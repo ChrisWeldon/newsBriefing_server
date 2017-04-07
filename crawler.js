@@ -2,6 +2,7 @@ var request = require('request');
 var cheerio = require('cheerio');
 var URL = require('url-parse');
 var express = require('express');
+var sessions = require('client-sessions');
 
 var app = express();
 app.set('views', './views');
@@ -152,7 +153,29 @@ function parseTitle(title){
 
 // over
 
-var qNum = 0;
+
+
+app.use(sessions({
+  cookieName: 'mySession', // cookie name dictates the key name added to the request object
+  secret: 'blargadeeblargblarg', // should be a large unguessable string
+  duration: 24 * 60 * 60 * 1000, // how long the session will stay valid in ms
+  activeDuration: 1000 * 60 * 5 // if expiresIn < activeDuration, the session will be extended by activeDuration milliseconds
+}));
+
+app.use(function(req, res, next) {
+  if (req.mySession.seenyou) {
+    res.setHeader('X-Seen-You', 'true');
+  } else {
+    // setting a property will automatically cause a Set-Cookie response
+    // to be sent
+    req.mySession.seenyou = true;
+    res.setHeader('X-Seen-You', 'false');
+  }
+});
+
+
+
+var qNum = 0;  //temporary tracker variable
 app.use(express.static('public'));
 
 app.get("/qs/:qid", function(req, res){
@@ -162,7 +185,6 @@ app.get("/qs/:qid", function(req, res){
 app.get("/get-question", function(req, res){
   res.render("sa", {"question": tempQuestions[qNum].question, "question_id":qNum})
   //TODO rework
-
 });
 
 app.post("/get-question", function(req, res){
@@ -170,10 +192,10 @@ app.post("/get-question", function(req, res){
   console.log(tempQuestions[qNum].answer);
   if(req.body.a == tempQuestions[qNum].answer){
     console.log("correct");
-    
   }else{
     console.log("incorrect");
   }
+
   qNum++;
 });
 
