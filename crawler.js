@@ -152,28 +152,32 @@ function parseTitle(title){
 
 // over
 
+var qNum = 0;
 app.use(express.static('public'));
 
 app.get("/qs/:qid", function(req, res){
   res.send(tempQuestions[req.params.qid]);
 });
 
-var randomQ = Math.floor((Math.random() * 10) + 1);
 app.get("/get-question", function(req, res){
-  res.render("sa", {"question": tempQuestions[randomQ].question, "question_id":randomQ})
-  //TODo rework
+  res.render("sa", {"question": tempQuestions[qNum].question, "question_id":qNum})
+  //TODO rework
 
 });
 
 app.post("/get-question", function(req, res){
   console.log(req.body.a);
-  console.log(tempQuestions[randomQ].answer);
-  if(req.body.a == tempQuestions[randomQ].answer){
+  console.log(tempQuestions[qNum].answer);
+  if(req.body.a == tempQuestions[qNum].answer){
     console.log("correct");
+    
   }else{
     console.log("incorrect");
   }
+  qNum++;
 });
+
+
 
 app.get("/qs", function(req, res){
   res.send(tempQuestions);
