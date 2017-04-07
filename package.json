@@ -9,6 +9,17 @@
   "author": "Chris Evans",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.14.0"
-  }
+    "express": "^4.14.0",
+    "request": "^2.81.0",
+    "body-parser":"^3.10.10"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChrisWeldon/newsBriefing_server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ChrisWeldon/newsBriefing_server/issues"
+  },
+  "homepage": "https://github.com/ChrisWeldon/newsBriefing_server#readme"
 }

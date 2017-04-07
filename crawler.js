@@ -4,6 +4,14 @@ var URL = require('url-parse');
 var express = require('express');
 
 var app = express();
+app.set('views', './views');
+app.set('view engine', 'pug');
+
+var bodyParser = require('body-parser');
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+}));
 
 
 var questions = [];
@@ -102,6 +110,8 @@ function collectArticles($, callback) {
   });
 }
 
+// CAUTION, the next part is garbage code that will be replaced with parser.js
+
 function parseTitle(title){
   var string = title;
   var fills = [];
@@ -140,10 +150,29 @@ function parseTitle(title){
   return fills;
 }
 
+// over
+
 app.use(express.static('public'));
 
 app.get("/qs/:qid", function(req, res){
   res.send(tempQuestions[req.params.qid]);
+});
+
+var randomQ = Math.floor((Math.random() * 10) + 1);
+app.get("/get-question", function(req, res){
+  res.render("sa", {"question": tempQuestions[randomQ].question, "question_id":randomQ})
+  //TODo rework
+
+});
+
+app.post("/get-question", function(req, res){
+  console.log(req.body.a);
+  console.log(tempQuestions[randomQ].answer);
+  if(req.body.a == tempQuestions[randomQ].answer){
+    console.log("correct");
+  }else{
+    console.log("incorrect");
+  }
 });
 
 app.get("/qs", function(req, res){
