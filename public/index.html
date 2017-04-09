@@ -1,11 +1,31 @@
 <DOCTYPE html>
 <head>
   <title>OPEN SCREEN</title>
+  <link rel="stylesheet" type='text/css' href="style.css">
 </head>
 <body>
-    <form name="startQuiz" action="get-question" method="get">
-      <button type="submit" name="startQuiz" value="Start" class="link-button">
-        Start Quiz
-      </button>
-    </form>
+  <div class="main-body">
+    <div class="Header">
+      <h1 class='title'>News Briefing</h1>
+      <div id="header-links">
+        <a href="">login</a>
+        <a href="">sign up</a>
+      </div>
+    </div>
+
+    <div class="Body">
+      <form name="startQuiz" action="get-question" method="get">
+        <button id="start-button" type="submit" name="startQuiz" value="Start" class="link-button">
+          Start Quiz
+        </button>
+      </form>
+    </div>
+
+    <div class="Footer">
+      <div class = "footer-links">
+        <a href="">contact us</a>
+        <a href="">submit feedback</a>
+      </div>
+    </div>
+  </div>
 <body>
