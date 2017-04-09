@@ -9,18 +9,61 @@ var app = express();
 app.set('views', './views');
 app.set('view engine', 'pug');
 
-app.use(session({secret: 'ssshhhhh'}));
+app.use(session({
+  secret: 'secret',
+  resave: true,
+  saveUninitialized: true
+  }));
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
-var sess;
+var sess; //session
 
 var questions = [];
 var tempQuestions = [];
 var SERVER_STATE;
 var surveySize = 24;
+
+var Active_IDs = {}
+
+
+var contains = function(needle) {
+    // Per spec, the way to identify NaN is that it is not equal to itself
+    var findNaN = needle !== needle;
+    var indexOf;
+
+    if(!findNaN && typeof Array.prototype.indexOf === 'function') {
+        indexOf = Array.prototype.indexOf;
+    } else {
+        indexOf = function(needle) {
+            var i = -1, index = -1;
+
+            for(i = 0; i < this.length; i++) {
+                var item = this[i];
+
+                if((findNaN && item !== item) || item === needle) {
+                    index = i;
+                    break;
+                }
+            }
+
+            return index;
+        };
+    }
+
+    return indexOf.call(this, needle) > -1;
+};
+
+function generateID(){
+  var hex_id;
+  var numberId = Math.floor((Math.random() * 10000) + 1);
+  console.log("generating ID");
+  hex_id = numberId.toString(16);
+  console.log("the id that was generated is: "+ hex_id);
+  return hex_id;
+}
 
 crawlWorldNews(function(){
   //TODO I don't think the callback function actually calls when finished.
@@ -158,28 +201,49 @@ function parseTitle(title){
 
 
 var qNum = 0;  //temporary tracker variable
+
 app.use(express.static('public'));
 
-app.get("/", function(req, res){
+app.get("/test-cookie", function(req, res){
+  console.log("New User!");
   sess = req.session;
   if(sess.visited){
+    //TODO get ID and determine which questions they have
+    // and which one they were on
 
+    console.log("sess was visited");
   }else{
     sess.visited = true;
+    sess.id = generateID();
+    console.log("sess was not visited");
+    Active_IDs[sess.id] = {
+      questions_seen: []
+    }
   }
-  res.render("index.html");
+  res.redirect('index.html');
+
 });
+
 
 app.get("/qs/:qid", function(req, res){
   res.send(tempQuestions[req.params.qid]);
 });
 
 app.get("/get-question", function(req, res){
-  res.render("sa", {"question": tempQuestions[qNum].question, "question_id":qNum})
+  sess = req.session;
+  console.log(Active_IDs[sess.id].questions_seen);
+  for(var i=0; i<tempQuestions.length; i++){
+    if(Active_IDs[sess.id].questions_seen.indexOf(i) <= -1 ){
+      res.render("sa", {"question": tempQuestions[i].question, "question_id":i});
+      sess.current_q = i;
+      break;
+    }
+  }
   //TODO rework
 });
 
 app.post("/get-question", function(req, res){
+  sess = req.session;
   console.log(req.body.a);
   console.log(tempQuestions[qNum].answer);
   if(req.body.a == tempQuestions[qNum].answer){
@@ -187,8 +251,10 @@ app.post("/get-question", function(req, res){
   }else{
     console.log("incorrect");
   }
-
+  Active_IDs[sess.id].questions_seen.push(sess.current_q);
   qNum++;
+
+  res.status(202).end();
 });
 
 
