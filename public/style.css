@@ -16,6 +16,13 @@ body{
   overflow: hidden;
 }
 
+slide-left{
+
+}
+@keyframes slide-left {
+
+}
+
 .header-links{
   align-self: flex-end;
 }

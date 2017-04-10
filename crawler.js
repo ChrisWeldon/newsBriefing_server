@@ -234,7 +234,8 @@ app.get("/get-question", function(req, res){
   console.log(Active_IDs[sess.id].questions_seen);
   for(var i=0; i<tempQuestions.length; i++){
     if(Active_IDs[sess.id].questions_seen.indexOf(i) <= -1 ){
-      res.render("sa", {"question": tempQuestions[i].question, "question_id":i});
+      //res.render("sa", {"question": tempQuestions[i].question, "question_id":i});
+      
       sess.current_q = i;
       break;
     }
