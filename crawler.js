@@ -189,7 +189,7 @@ function parseTitle(title){
     fills = string.match(/(?!^)\b[A-Z]\S+/);
     fills["question"] = string.slice(0, fills["index"]) + "*a" + string.slice(fills["index"]+fills[0].length, fills["input"].length);
 
-  }else{
+  }else if(/^([\w\-]+)/.test(string)){
     fills = string.match(/^([\w\-]+)/);
     fills["question"] = string.slice(0, fills["index"]) + "*a" + string.slice(fills["index"]+fills[0].length, fills["input"].length);
   }

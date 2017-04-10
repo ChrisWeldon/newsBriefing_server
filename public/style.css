@@ -1,58 +1,160 @@
+body{
+  padding: 0px;
+  margin: 0px;
+  border:0px;
+}
+
 .main-body{
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
   width: 100
-  padding:0;
-  margin:0;
+  padding:0px;
+  margin:0px;
   border:none;
+  overflow: hidden;
+}
+
+.header-links{
+  align-self: flex-end;
+}
+#start-button{
+  background-color: #3333ff;
+  border: none;
+  color: white;
+  padding: 32px 64px;
+  font-size: 24;
+  text-decoration: none;
+  border-radius: 8px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+#start-form{
+  position: absolute;
+  top: 44%;
+  left: 45%;
+  max-height: 100%;
+}
+#gradient{
+  top:0px;
+  left:0px;
+  height:100%;
+  width:100%;
+  position:absolute;
+  align-self: flex-start;
+  max-height: 100%;
+  background: -webkit-linear-gradient(right, rgba(64,64,64,.5), rgba(64,64,64,1)); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(left, rgba(64,64,64,.5), rgba(64,64,64,1)); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(left, rgba(64,64,64,.5), rgba(64,64,64,1)); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(to left, rgba(64,64,64,.5), rgba(64,64,64,1)); /* Standard syntax (must be last) */
+}
+#picture-underlay{
+  order:2;
+  max-height:100%;
+  flex-grow: 1;
+  height: 100%;
+  min-width: 70%;
+  max-width: 70%;
+  margin:10px;
+  margin-left: 0px;
+  position: relative;
+  align-self: flex-start;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden
+}
+#picture-underlay img{
+  flex-shrink: 0;
+  min-width: 100%;
+  min-height: 100%;
+}
+#content-sidebar{
+  display: flex;
+  align-items: flex-start;;
+  flex-direction: column;
+  order:3;
+  align-self: flex-start;
+  max-height: 100%;
+  min-width: 30%;
+  margin: 10px;
+  flex-grow: 1;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #262626;
+}
+#content-sidebar p{
+  padding-left: 10px;
+  font-size: 24;
+  font-family: "arial";
+  color: white;
+}
+#content-sidebar h1{
+  padding-left: 10px;
+  font-family: "arial";
+  color: #ffffff;
+}
+.Body{
+  display: flex;
+  order:2;
+  background-color: #404040;
+  flex-direction: column;
+  flex-wrap: wrap;
+  flex-grow: 1;
 }
 
 .Header{
   display: flex;
   justify-content: space-between;
   order:1;
-  height: 50px;
+  height: 90px;
   width: 100%;
-  background-color: powderblue;
+  background-color: 262626;
   flex-grow: 0;
-  align-self: flex-start;
 }
-.header-links{
-  align-self: flex-end;
-}
-#start-button{
-  background-color: #4CAF50;
-  border: none;
-  color: white;
-  padding: 16px 32px;
-  text-decoration: none;
-  margin: 4px 2px;
-  cursor: pointer;
-}
-.Body{
-  order:2;
-  background-color: lightgrey;
-  flex-grow: 1;
-}
-.Body > h1{
-  font: Impact;
+
+.Header > h1{
+  font-family: 'arial';
+  color:white;
   margin: 10px;
   size: 12;
 }
 .Footer{
   display: flex;
-  justify-content: flex-start;;
+  justify-content: flex-start;
+  flex-direction: column;
   order:3;
   height: 75px;
   width: 100%;
-  background-color: powderblue;
+  background-color: #404040; //262626
   flex-grow: 0;
-  align-self: flex-end;
 }
-.Footer > div > a{
+.Footer a{
   padding: 12px;
-  color: black;
+  color: white;
   text-decoration: none;
+}
+
+.Header a{
+  padding: 12px;
+  color: white;
+  font-family: "arial";
+  text-decoration: none;
+}
+
+#footer-links{
+  align-self: center;
+  margin-top: 10px;
+}
+
+#header-links{
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  align-self: center;
+  left:-10%
 }
