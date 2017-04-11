@@ -2,8 +2,8 @@
 <head>
   <title>OPEN SCREEN</title>
   <link rel="stylesheet" type='text/css' href="style.css">
-  <script type ="text/javascript" src="index.js"></script>
   <script  type ="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script type ="text/javascript" src="index.js"></script>
 </head>
 <body>
   <div class="main-body">
@@ -18,7 +18,7 @@
     <div class="Body">
       <div id=picture-underlay>
         <div id="gradient"></div>
-        <img src="serbia-protest.jpg">
+        <img src="serbia-protest.jpg" >
       </div>
       <div id="content-sidebar">
         <h1>How informed are you?</h1>
@@ -32,11 +32,7 @@
           informity.</p>
       </div>
       <div id="start-form">
-        <form name="startQuiz" action="get-question" method="get">
-          <button id="start-button" type="submit" name="startQuiz" value="Start" class="link-button">
-            Today's News
-          </button>
-        </form>
+        <input id="start-button" type="button" value="Today's News" class="link-button" onclick="startQuiz()"/>
       </div>
     </div>
 

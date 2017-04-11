@@ -26,8 +26,6 @@ var tempQuestions = [];
 var SERVER_STATE;
 var surveySize = 24;
 
-var Active_IDs = {}
-
 
 var contains = function(needle) {
     // Per spec, the way to identify NaN is that it is not equal to itself
@@ -198,7 +196,23 @@ function parseTitle(title){
 
 // over
 
+//PLAYER JSON FRAMEWOKR
+/*
+sess{
+  visited:
+  id:
+}
 
+Active_IDs {
+  <id> {
+    questions_seen:
+    inProg:
+  }
+
+}
+
+*/
+var Active_IDs = {}
 
 var qNum = 0;  //temporary tracker variable
 
@@ -208,7 +222,7 @@ app.get("/test-cookie", function(req, res){
   console.log("New User!");
   sess = req.session;
   if(sess.visited){
-    //TODO get ID and determine which questions they have
+    //TODO get ID and determine which questions they have seen
     // and which one they were on
 
     console.log("sess was visited");
@@ -217,7 +231,8 @@ app.get("/test-cookie", function(req, res){
     sess.id = generateID();
     console.log("sess was not visited");
     Active_IDs[sess.id] = {
-      questions_seen: []
+      questions_seen: [],
+      inProg: false
     }
   }
   res.redirect('index.html');
@@ -231,11 +246,11 @@ app.get("/qs/:qid", function(req, res){
 
 app.get("/get-question", function(req, res){
   sess = req.session;
+
   console.log(Active_IDs[sess.id].questions_seen);
   for(var i=0; i<tempQuestions.length; i++){
     if(Active_IDs[sess.id].questions_seen.indexOf(i) <= -1 ){
-      //res.render("sa", {"question": tempQuestions[i].question, "question_id":i});
-      
+
       sess.current_q = i;
       break;
     }
@@ -245,20 +260,26 @@ app.get("/get-question", function(req, res){
 
 app.post("/get-question", function(req, res){
   sess = req.session;
-  console.log(req.body.a);
-  console.log(tempQuestions[qNum].answer);
-  if(req.body.a == tempQuestions[qNum].answer){
-    console.log("correct");
-  }else{
-    console.log("incorrect");
-  }
-  Active_IDs[sess.id].questions_seen.push(sess.current_q);
-  qNum++;
 
   res.status(202).end();
 });
 
+app.get("/getPlayerData", function(req, res){
+  sess = req.session;
+  console.log(Active_IDs[sess.id]);
+  res.send(Active_IDs[sess.id]);
+});
 
+app.get("/startQuiz", function(req,res){
+  sess = req.session;
+  console.log(Active_IDs[sess.id]);
+  if(Active_IDs[sess.id].inProg){
+
+  }else{
+    Active_IDs[sess.id].inProg = true;
+  }
+  res.send(Active_IDs[sess.id]);
+});
 
 app.get("/qs", function(req, res){
   res.send(tempQuestions);
