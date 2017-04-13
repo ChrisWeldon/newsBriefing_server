@@ -22,10 +22,90 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 
 var sess; //session
-
-var questions = [];
 var tempQuestions = [];
+var questions = [];
+
 var SERVER_STATE;
+
+
+var surveySize = 24;
+
+crawlWorldNews = function(callback){
+  var pageToVisit = "https://www.reddit.com/r/worldnews/";
+  var finalQs;
+  var finishedW = false;
+  console.log("Visiting page " + pageToVisit);
+  request(pageToVisit, function(error, response, body) {
+     if(error) {
+       console.log("Error: " + error);
+     }else if(response.statusCode === 200) {
+       // Parse the document body
+
+       var $ = cheerio.load(body);
+       console.log("Page title:  " + $('title').text());
+       collectInternalLinks($);
+       finalQs = collectArticles($, callback);
+     }else{
+       console.log("Status code: " + response.statusCode);
+     }
+  });
+}
+
+collectInternalLinks = function($) {
+  var allRelativeLinks = [];
+  var allAbsoluteLinks = [];
+
+  var relativeLinks = $("a[href^='/']");
+  relativeLinks.each(function() {
+      allRelativeLinks.push($(this).attr('href'));
+
+  });
+
+  var absoluteLinks = $("a[href^='http']");
+  absoluteLinks.each(function() {
+      allAbsoluteLinks.push($(this).attr('href'));
+  });
+
+  console.log("Found " + allRelativeLinks.length + " relative links");
+  console.log("Found " + allAbsoluteLinks.length + " absolute links");
+}
+
+collectArticles = function($, callback) {
+  SERVER_STATE = "UPDATING_ARTICLES";
+  var cycleCount = 0;
+  var titleLinks = $("a[class^='title may-blank outbound']");
+  var finishedPushing = false;
+  titleLinks.each(function() {
+      var url = $(this).attr('href');
+
+
+      request(url, function(error, response, body){
+        if(error) {
+          console.log("Error: " + error);       // Check status code (200 is HTTP OK)
+        }else if(response.statusCode === 200) { //console.log("Status code: " + response.statusCode);
+          // Parse the document body
+          var tempTitle = {};
+          var $ = cheerio.load(body);
+          var articleQInfo = parseTitle($('title').text());
+          //console.log("ARTICLE Page title:  " + $('title').text());
+          tempTitle["link"] = url;
+          tempTitle["title"] = articleQInfo["input"];
+          tempTitle["question"] = articleQInfo["question"];
+          tempTitle["answer"] = articleQInfo[0];
+          console.log("no problem connecting indivdual articles #" + cycleCount);
+          if(articleQInfo != []){
+            tempQuestions.push(tempTitle);
+          }
+
+          if(cycleCount == surveySize){
+            finishedPushing = true;
+            callback();
+          }
+          cycleCount++
+        }
+      });
+  });
+}
 
 
 var contains = function(needle) {
@@ -64,13 +144,11 @@ function generateID(){
   return hex_id;
 }
 
-crawlWorldNews(function(){
-  //TODO I don't think the callback function actually calls when finished.
+questions = crawlWorldNews(function(){
   console.log("cycleDone callback called!");
-  questions = tempQuestions;
 });
 
-//PLAYER JSON FRAMEWOKR
+//PLAYER JSON FRAMEWORK
 /*
 sess{
   visited:
@@ -81,6 +159,7 @@ Active_IDs {
   <id> {
     questions_seen:
     inProg:
+    current_q:
   }
   <id> {
     ...
@@ -111,7 +190,8 @@ app.get("/test-cookie", function(req, res){
     console.log("sess was not visited");
     Active_IDs[sess.id] = {
       questions_seen: [],
-      inProg: false
+      inProg: false,
+      current_q: null
     }
   }
   res.redirect('index.html');
@@ -127,13 +207,17 @@ app.get("/get-question", function(req, res){
   sess = req.session;
 
   console.log(Active_IDs[sess.id].questions_seen);
-  for(var i=0; i<tempQuestions.length; i++){
-    if(Active_IDs[sess.id].questions_seen.indexOf(i) <= -1 ){
 
-      sess.current_q = i;
+  Active_IDs[sess.id].current_q = 1;
+  /*for(var i=0; i<tempQuestions.length; i++){
+    if(Active_IDs[sess.id].questions_seen.indexOf(i) < -1 ){
+      console.log("using question " + i);
+      Active_IDs[sess.id].current_q = i;
+      Active_IDs[sess.id].questions_seen.push(i);
       break;
     }
-  }
+  }*/
+  res.send(tempQuestions[Active_IDs[sess.id].current_q]);
   //TODO rework
 });
 
