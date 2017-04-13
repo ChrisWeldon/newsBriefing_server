@@ -94,23 +94,31 @@ body{
   flex-direction: column;
   order:3;
   align-self: flex-end;
-  min-width: 0%;
+  min-width: 27%;
+  max-width: 27%;
   margin: 10px;
   flex-grow: 1;  //fix later
   overflow: hidden;
   border-radius: 8px;
   background-color: #262626;
+
 }
-#content-sidebar p{
-  padding-left: 10px;
+.quotes p{
+  padding-left: 30px;
   font-size: 24;
   font-family: "arial";
+  font-style: italic;
+  color: white;
+  word-wrap: break-word;
+}
+.quotes h2{
+  padding-left: 60px;
+  font-size: 24;
+  font-family: "arial";
+  font-style: italic;
   color: white;
 }
-#content-sidebar h1{
-  padding-left: 10px;
-  font-family: "arial";
-  color: #ffffff;
+
 }
 .Body{
   display: flex;

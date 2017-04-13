@@ -174,9 +174,8 @@ var Active_IDs = {}
 
 var qNum = 0;  //temporary tracker variable
 
-app.use(express.static('public'));
 
-app.get("/test-cookie", function(req, res){
+app.get("/", function(req, res){
   console.log("New User!");
   sess = req.session;
   if(sess.visited){
@@ -197,6 +196,8 @@ app.get("/test-cookie", function(req, res){
   res.redirect('index.html');
 
 });
+
+app.use(express.static('public'));
 
 
 app.get("/qs/:qid", function(req, res){
