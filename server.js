@@ -6,7 +6,6 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var app = express();
 require("./parseTitle.js");
-require("./crawler.js");
 
 app.set('views', './views');
 app.set('view engine', 'pug');
