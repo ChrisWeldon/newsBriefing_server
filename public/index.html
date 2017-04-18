@@ -1,9 +1,10 @@
 <DOCTYPE html>
 <head>
   <title>OPEN SCREEN</title>
-  <link rel="stylesheet" type='text/css' href="style.css">
   <script  type ="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script type ="text/javascript" src="index.js"></script>
+  <!--<link href="dist/css/bootstrap.css" rel="stylesheet">-->
+  <link rel="stylesheet" type='text/css' href="style.css">
 </head>
 <body>
   <div class="main-body">
@@ -16,20 +17,33 @@
     </div>
 
     <div class="Body">
-      <div id=picture-underlay>
-        <div id="gradient"></div>
-        <img src="serbia-protest.jpg" >
+      <div id="qbody">
+        <div id="question-response">
+          <div id="question-div">
+            <h1 id="question">Example ______ Question</h1>
+          </div>
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Answer here...">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button">Guess!</button>
+            </span>
+          </div>
+        </div>
+        <div id=picture-underlay>
+          <div id="gradient"></div>
+          <img src="serbia-protest.jpg" >
+          <div id="start-form">
+            <input id="start-button" type="button" value="Today's News" class="link-button" onclick="startQuiz()"/>
+          </div>
+        </div>
       </div>
       <div id="content-sidebar">
-        <div class="quotes">
+        <div id="quotes">
           <p>“Whatever the cost of our libraries,<br>
             the price is cheap compared to that<br>
            of an ignorant nation.” </p>
            <h2>&#822 Walter Cronkite<h2>
         </div>
-      </div>
-      <div id="start-form">
-        <input id="start-button" type="button" value="Today's News" class="link-button" onclick="startQuiz()"/>
       </div>
     </div>
 

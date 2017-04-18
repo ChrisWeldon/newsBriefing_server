@@ -77,32 +77,35 @@ collectArticles = function($, callback) {
   titleLinks.each(function() {
       var url = $(this).attr('href');
 
+      if(url.indexOf("www.theguardian.com")> -1){
+        return;
+      }else{
+        request(url, function(error, response, body){
+          if(error) {
+            console.log("Error: " + error);       // Check status code (200 is HTTP OK)
+          }else if(response.statusCode === 200) { //console.log("Status code: " + response.statusCode);
+            // Parse the document body
+            var tempTitle = {};
+            var $ = cheerio.load(body);
+            var articleQInfo = parseTitle($('title').text());
+            //console.log("ARTICLE Page title:  " + $('title').text());
+            tempTitle["link"] = url;
+            tempTitle["title"] = articleQInfo["input"];
+            tempTitle["question"] = articleQInfo["question"];
+            tempTitle["answer"] = articleQInfo[0];
+            console.log("no problem connecting indivdual articles #" + cycleCount);
+            if(articleQInfo != []){
+              tempQuestions.push(tempTitle);
+            }
 
-      request(url, function(error, response, body){
-        if(error) {
-          console.log("Error: " + error);       // Check status code (200 is HTTP OK)
-        }else if(response.statusCode === 200) { //console.log("Status code: " + response.statusCode);
-          // Parse the document body
-          var tempTitle = {};
-          var $ = cheerio.load(body);
-          var articleQInfo = parseTitle($('title').text());
-          //console.log("ARTICLE Page title:  " + $('title').text());
-          tempTitle["link"] = url;
-          tempTitle["title"] = articleQInfo["input"];
-          tempTitle["question"] = articleQInfo["question"];
-          tempTitle["answer"] = articleQInfo[0];
-          console.log("no problem connecting indivdual articles #" + cycleCount);
-          if(articleQInfo != []){
-            tempQuestions.push(tempTitle);
+            if(cycleCount == surveySize){
+              finishedPushing = true;
+              callback();
+            }
+            cycleCount++
           }
-
-          if(cycleCount == surveySize){
-            finishedPushing = true;
-            callback();
-          }
-          cycleCount++
-        }
       });
+    }
   });
 }
 
