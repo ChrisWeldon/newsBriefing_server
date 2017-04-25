@@ -1,4 +1,4 @@
-
+rse
 
 $(document).ready(function() {
   var playerData = $.getJSON("/getPlayerData",{}, function(dat, stat){
@@ -6,7 +6,6 @@ $(document).ready(function() {
     if(dat.inProg==true){
       startQuiz();
     }else{
-      //make it so it shows questions already
     }
   });
 });
@@ -14,18 +13,38 @@ $(document).ready(function() {
 function startQuiz(){
   console.log("startQuiz");
   $.getJSON("/startQuiz", {}, function(dat, stat){  //TODO combine this and /get player data with URL query
-    $("#picture-underlay").addClass("slide-left");
-    $("#start-form").addClass("fade-away");
     getQ();
   });
 }
+
+function openMenu(){
+  console.log("revealMenu");
+  $("#content-sidebar").addClass("hide-menu");
+}
+
 function getQ(){
   console.log("getQ");
-  $.getJSON("/get-question",{}, function(dat, stat){
+  $.getJSON("/get-question", {}, function(dat, stat){
+    var q = dat.question;
+    var bnum = Array(dat.answer.length).join("_");
+    q = q.replace("*a",bnum);
+    $("#question").text(q);
+    $("#picture-underlay").addClass("slide-left");
+    $("#start-form").addClass("fade-away");
     console.log(dat);
-    
   });
 }
-function endQ(){
-  console.log("endQ");
+function sendAnswer(){
+  console.log("sendAnswer");
+  $.getJSON("/sendAnswer", {q:$("q-answer").value}, function(dat, stat){
+
+  });
 }
+function skip(){
+
+}
+function exit(){
+
+}
+
+function endQ(){}

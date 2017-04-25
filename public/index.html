@@ -1,44 +1,75 @@
 <DOCTYPE html>
 <head>
   <title>OPEN SCREEN</title>
-  <link rel="stylesheet" type='text/css' href="style.css">
-  <script  type ="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script  type ="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script type ="text/javascript" src="index.js"></script>
+  <link href="dist/css/bootstrap.css" rel="stylesheet">
+  <link rel="stylesheet" type='text/css' href="green-color-scheme.css">
+  <link rel="stylesheet" type='text/css' href="style.css">
 </head>
 <body>
   <div class="main-body">
     <div class="Header">
       <h1 class='title'>News Briefing</h1>
-      <div id="header-links">
-        <a href="">login</a>
-        <a href="">sign up</a>
+      <div id="right-menu-div">
+        <div id="header-links">
+          <a href="" class="links">login</a>
+          <a href="" class="links">sign up</a>
+        </div>
+        <button class="menu" onclick="openMenu()"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></button>
       </div>
     </div>
 
     <div class="Body">
-      <div id=picture-underlay>
-        <div id="gradient"></div>
-        <img src="serbia-protest.jpg" >
+      <div id="qbody">
+        <div id="question-response">
+          <div id="question-div">
+            <h1 id="question">*question*</h1>
+          </div>
+          <div class="response-group">
+            <form action="sendAnswer">
+              <input type="text" id="q-answer" placeholder="Answer here...">
+              <span>
+                <!--class="input-group-btn"-->
+                <button class="gbutton" type="submit">Guess!</button>
+              </span>
+            </form>
+          </div>
+          <div id="qcontrol">
+            <button class="btn" id="exit" onclick="exit()">Exit</button>
+            <!--<button class="btn" id="hint">Hint</button>-->
+            <button class="btn" id="skip" onclick="skip()">Skip</button>
+          </div>
+        </div>
+        <div id=picture-underlay>
+          <div id="gradient"></div>
+          <img src="serbia-protest.jpg" >
+          <div id="start-form">
+            <input id="start-button" type="button" value="Today's News" class="link-button" onclick="startQuiz()"/>
+          </div>
+        </div>
       </div>
       <div id="content-sidebar">
-        <div class="quotes">
+        <div id="quotes">
           <p>“Whatever the cost of our libraries,<br>
             the price is cheap compared to that<br>
            of an ignorant nation.” </p>
            <h2>&#822 Walter Cronkite<h2>
         </div>
-      </div>
-      <div id="start-form">
-        <input id="start-button" type="button" value="Today's News" class="link-button" onclick="startQuiz()"/>
-      </div>
+        <div id= "footer-links">
+          <a href="">contact</a>
+          <a href="">feedback</a>
+          <a href="">about</a>
+        </div>
+    </div>
     </div>
 
-  <div class="Footer">
+  <!--<div class="Footer">
     <div id= "footer-links">
       <a href="">contact us</a>
       <a href="">submit feedback</a>
       <a href="">about us</a>
     </div>
-  </div>
+  </div>-->
 </div>
 <body>
