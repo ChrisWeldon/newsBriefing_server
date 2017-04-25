@@ -1,6 +1,6 @@
 var request = require('request');
 var cheerio = require('cheerio');
-var URL = require('url-parse');
+var url = require('url-parse');
 var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
@@ -95,7 +95,7 @@ collectArticles = function($, callback) {
             tempTitle["answer"] = articleQInfo[0];
             console.log("no problem connecting indivdual articles #" + cycleCount);
             if(articleQInfo != []){
-              tempQuestions.push(tempTitle);
+            tempQuestions.push(tempTitle);
             }
 
             if(cycleCount == surveySize){
@@ -162,6 +162,7 @@ Active_IDs {
     questions_seen:
     inProg:
     current_q:
+    correct: <done/tbd>
   }
   <id> {
     ...
@@ -192,7 +193,8 @@ app.get("/", function(req, res){
     Active_IDs[sess.id] = {
       questions_seen: [],
       inProg: false,
-      current_q: null
+      current_q: null,
+      correct: "tbd"
     }
   }
   res.redirect('index.html');
@@ -212,22 +214,15 @@ app.get("/get-question", function(req, res){
   console.log(Active_IDs[sess.id].questions_seen);
 
   Active_IDs[sess.id].current_q = 1;
-  /*for(var i=0; i<tempQuestions.length; i++){
-    if(Active_IDs[sess.id].questions_seen.indexOf(i) < -1 ){
-      console.log("using question " + i);
-      Active_IDs[sess.id].current_q = i;
-      Active_IDs[sess.id].questions_seen.push(i);
-      break;
-    }
-  }*/
   res.send(tempQuestions[Active_IDs[sess.id].current_q]);
   //TODO rework
 });
 
-app.post("/get-question", function(req, res){
+app.post("/index.html", function(req, res){
   sess = req.session;
-
+  console.log(req.body);
   res.status(202).end();
+  res.redirect(req.get('referer'));
 });
 
 app.get("/getPlayerData", function(req, res){
@@ -238,13 +233,25 @@ app.get("/getPlayerData", function(req, res){
 
 app.get("/startQuiz", function(req,res){
   sess = req.session;
-  console.log(Active_IDs[sess.id]);
+
   if(Active_IDs[sess.id].inProg){
 
   }else{
     Active_IDs[sess.id].inProg = true;
   }
   res.send(Active_IDs[sess.id]);
+});
+
+app.get("/sendAnswer", function(req,res){
+  sess = req.session;
+  console.log("query is "+ req.query);
+  /*if(Active_IDs[sess.id].correct != "done" && req.query == tempQuestions[Active_IDs[sess.id].current_q.num].answer){
+    res.send("correct");
+  }else{
+    res.send("false");
+  }*/
+  res.send("correct");
+
 });
 
 app.get("/qs", function(req, res){

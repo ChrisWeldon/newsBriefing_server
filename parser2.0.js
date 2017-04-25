@@ -1,7 +1,7 @@
 
-parser("Ukraine says Russian sanctions must stay, rejects talk of *aTrump deal");
+//parser("Ukraine says Russian sanctions must stay, rejects talk of *aTrump deal");
 
-function parser(title){
+parser = function(title){
   var pos = require('pos');
 
   var line = title.trim();

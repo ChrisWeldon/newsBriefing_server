@@ -1,19 +1,22 @@
 <DOCTYPE html>
 <head>
   <title>OPEN SCREEN</title>
-  <script  type ="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script  type ="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script type ="text/javascript" src="index.js"></script>
-  <!--<link href="dist/css/bootstrap.css" rel="stylesheet">-->
+  <link href="dist/css/bootstrap.css" rel="stylesheet">
   <link rel="stylesheet" type='text/css' href="green-color-scheme.css">
   <link rel="stylesheet" type='text/css' href="style.css">
 </head>
 <body>
   <div class="main-body">
-    <div class="Header color-secondary-1-4">
+    <div class="Header">
       <h1 class='title'>News Briefing</h1>
-      <div id="header-links">
-        <a href="">login</a>
-        <a href="">sign up</a>
+      <div id="right-menu-div">
+        <div id="header-links">
+          <a href="" class="links">login</a>
+          <a href="" class="links">sign up</a>
+        </div>
+        <button class="menu" onclick="openMenu()"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></button>
       </div>
     </div>
 
@@ -21,13 +24,21 @@
       <div id="qbody">
         <div id="question-response">
           <div id="question-div">
-            <h1 id="question">Example ______ Question, Lorem Ipsum Delorem</h1>
+            <h1 id="question">*question*</h1>
           </div>
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Answer here...">
-            <span class="input-group-btn">
-              <button class="btn btn-default" type="button">Guess!</button>
-            </span>
+          <div class="response-group">
+            <form action="sendAnswer">
+              <input type="text" id="q-answer" placeholder="Answer here...">
+              <span>
+                <!--class="input-group-btn"-->
+                <button class="gbutton" type="submit">Guess!</button>
+              </span>
+            </form>
+          </div>
+          <div id="qcontrol">
+            <button class="btn" id="exit" onclick="exit()">Exit</button>
+            <!--<button class="btn" id="hint">Hint</button>-->
+            <button class="btn" id="skip" onclick="skip()">Skip</button>
           </div>
         </div>
         <div id=picture-underlay>
@@ -50,7 +61,7 @@
           <a href="">feedback</a>
           <a href="">about</a>
         </div>
-      </div>
+    </div>
     </div>
 
   <!--<div class="Footer">

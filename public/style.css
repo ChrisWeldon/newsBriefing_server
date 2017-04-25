@@ -97,7 +97,7 @@ body{
   border-radius: 8px;
   margin: 4px 2px;
   cursor: pointer;
-  border:1px solid var(--color-secondary-1-1);
+  border: 2px solid var(--color-secondary-1-1);
 }
 
 #start-button:hover{
@@ -111,7 +111,10 @@ body{
   border-radius: 8px;
   margin: 4px 2px;
   cursor: pointer;
-  border: 1px solid var(--color-secondary-1-4);
+  border: 2px solid var(--color-secondary-1-4);
+}
+#start-button:focus{
+  outline: none;
 }
 
 #start-form{
@@ -139,8 +142,8 @@ body{
   flex-grow: 1;
   margin-left: 0px;
   position: relative;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+  //border-top-right-radius: 6px;
+  //border-bottom-right-radius: 6px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -151,14 +154,14 @@ body{
   max-height:100%;
   flex-grow: 1;
   height: 100%;
-  min-width: 0%;
-  max-width: 70%;
-  margin:10px;
+  width:73%;
+  //margin:10px;
   margin-left: 0px;
   position: relative;
   align-self: flex-start;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+  //border-top-right-radius: 8px;
+  //border-bottom-right-radius: 8px;
+  background-image: url("egg-back.png");
   overflow: hidden;
 }
 #question-response{
@@ -169,12 +172,13 @@ body{
   min-width: 87%;
   top: 5%;
   left:5%;
-  border-radius: 8px;
-  background-color: var(--color-secondary-1-3);
+  border-radius: 6px;
+  background-color: var(--color-secondary-1-1);
   max-width: 500px;
-  display: inline-block;
+  //display: inline-block;
   padding: 6px;
   margin: 10px;
+  //border: 2px solid var(--color-secondary-1-4);
 
   display: flex;
   flex-direction: column;
@@ -185,12 +189,12 @@ body{
   font-family: Arial;
   padding: 12px;
   margin:20px;
-  border: 2px solid var(--color-secondary-2-3);
+  border: 2px solid var(--color-secondary-1-4);
   border-radius: 8px;
   align-self: center;
-  color: var(--color-secondary-2-0);
+  color: white; //var(--color-secondary-1-3);
 }
-.input-group{
+.response-group{
   align-self: center;
 }
 
@@ -198,7 +202,7 @@ input[type=text]{
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
-  border: 2px solid var(--color-secondary-1-1);
+  border: 2px solid var(--color-secondary-1-4);
   border-radius: 4px;
   font-size: 20px;
 }
@@ -206,19 +210,25 @@ input[type=text]:hover{
   border: 2px solid var(--color-secondary-1-0);
 }
 
-.btn{
+.gbutton{
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
-  border: 2px solid var(--color-secondary-1-1);
+  border: 2px solid var(--color-secondary-1-4);
   border-radius: 4px;
   font-size: 20px;
-  color: var(--color-secondary-1-3);
-  background-color: var(--color-secondary-1-1);
+  color: var(--color-secondary-1-1);
+  background-color: var(--color-secondary-1-3);
 }
-.btn:hover{
+.gbutton:hover{
   box-sizing: border-box;
   border: 2px solid var(--color-secondary-1-0);
+}
+#qcontrol{
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 #content-sidebar{
@@ -229,20 +239,22 @@ input[type=text]:hover{
   order:3;
   align-self: flex-end;
   min-width: 27%;
-  margin: 10px;
+  //margin: 10px;
   flex-grow: 1;  //fix later
   overflow: hidden;
-  border-radius: 8px;
+  //border-radius: 6px;
   background-color: var(--color-secondary-1-3); //#262626;
-  word-wrap: break-word;
+  word-wrap: normal;
+  border-left: 2px solid var(--color-secondary-1-4);
 }
 #content-sidebar p{
   padding-left: 20px;
   font-size: 24;
   font-family: "arial";
   font-style: italic;
+  display: block;
   color: var(--color-secondary-2-1);
-  word-wrap: break-word;
+  word-wrap: inherit;
 }
 #content-sidebar h2{
   padding-left: 40px;
@@ -250,6 +262,7 @@ input[type=text]:hover{
   font-size: 24;
   font-family: "arial";
   font-style: italic;
+  display: block;
   color: var(--color-secondary-2-0);
 }
 #content-sidebar h1{
@@ -262,27 +275,27 @@ input[type=text]:hover{
   margin: 10px;
   overflow: hidden;
   max-width: 300px;
+  min-width: 80%;
   text-overflow: ellipsis;
   border: 2px solid var(--color-secondary-2-3);
   border-radius: 8px;
 }
 .Body{
   display: flex;
-  order:2;
-  //background-color: #404040;
   flex-direction: column;
   flex-wrap: wrap;
   flex-grow: 1;
   align-content: space-between;
-  //background-image: url("7e407a5a.png");
-  background-image: url("connect.png");
+  order:2;
+  //background-color: #f2f2f2;
+  background-image: url("egg-back.png");
 }
 
 .Header{
   display: flex;
   justify-content: space-between;
   order:1;
-  height: 90px;
+  min-height: 70px;
   width: 100%;
   //background-color: 262626;
   background-color: var(--color-secondary-1-4);
@@ -291,11 +304,17 @@ input[type=text]:hover{
 
 .Header > h1{
   font-family: 'arial';
-  color:var(--color-secondary-2-1);
+  color:var(--color-primary-0);
   margin: 10px;
-  size: 12;
+  font-size: 48;
 }
-.Header a{
+
+#right-menu-div{
+  display: flex;
+  flex-direction: row;
+
+}
+.Header .links{
   padding: 12px;
   margin:6px;
   color: var(--color-secondary-1-1);
@@ -304,9 +323,34 @@ input[type=text]:hover{
   border: 2px solid var(--color-secondary-1-0);
   border-radius: 4px;
 }
-.Header a:hover {
+.Header .links:hover {
   border: 2px solid var(--color-secondary-1-3);
 }
+.menu{
+  background-color: var(--color-secondary-1-4);
+  border:none;
+  color:var(--color-secondary-1-0);
+  font-size: 3.5em;
+  margin:5px;
+  padding-bottom: 6px;
+}
+.menu:hover{
+  color: var(--color-secondary-1-3);
+}
+.menu:focus{
+  outline: none;
+}
+.hide-menu{
+  animation-name: hide;
+  animation-duration: 3s;
+  animation-fill-mode: both;
+}
+
+@keyframes hide{
+  0%{left:100%;}
+  100%{left:0%;}
+}
+
 .Footer{
   display: flex;
   justify-content: flex-start;
@@ -319,16 +363,21 @@ input[type=text]:hover{
 }
 
 #footer-links a{
-  padding: 10px;
+  padding: 2px;
   font-family: arial;
+  margin: 10px;
   font-size: 15;
-  color: var(--color-secondary-2-4);
+  color: var(--color-secondary-1-1);
   text-decoration: none;
+  border: 2px solid var(--color-secondary-1-1);
+  border-radius: 4px;
 }
 #footer-links a:hover{
-  padding: 10px;
-  color: var(--color-secondary-2-3);
-  text-decoration: none;
+  border: 2px solid var(--color-secondary-1-2);
+  color: var(--color-secondary-1-2);
+}
+#blank{
+  color: black;
 }
 
 #footer-links{
