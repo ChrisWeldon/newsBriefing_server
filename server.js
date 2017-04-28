@@ -213,7 +213,7 @@ app.get("/get-question", function(req, res){
 
   console.log(Active_IDs[sess.id].questions_seen);
 
-  Active_IDs[sess.id].current_q = 1;
+  Active_IDs[sess.id].current_q = 3;
   res.send(tempQuestions[Active_IDs[sess.id].current_q]);
   //TODO rework
 });
@@ -250,7 +250,8 @@ app.get("/sendAnswer", function(req,res){
   }else{
     res.send("false");
   }*/
-  res.send("correct");
+  res.redirect(req.get('referer'));
+  //res.send("correct");
 
 });
 

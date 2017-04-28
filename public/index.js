@@ -1,4 +1,4 @@
-rse
+
 
 $(document).ready(function() {
   var playerData = $.getJSON("/getPlayerData",{}, function(dat, stat){
