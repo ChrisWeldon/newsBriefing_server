@@ -10,7 +10,7 @@
 <body>
   <div class="main-body">
     <div class="Header">
-      <h1 class='title'>News Briefing</h1>
+      <h1 class='title'><a href="/home" id="home">News Briefing</a></h1>
       <div id="right-menu-div">
         <div id="header-links">
           <a href="" class="links">login</a>
@@ -27,8 +27,8 @@
             <h1 id="question">*question*</h1>
           </div>
           <div class="response-group">
-            <form action="sendAnswer">
-              <input type="text" id="q-answer" placeholder="Answer here...">
+            <form method="get">
+              <input name="answer" type="text" id="q-answer" placeholder="Answer here...">
               <span>
                 <!--class="input-group-btn"-->
                 <button class="gbutton" type="submit">Guess!</button>

@@ -250,9 +250,16 @@ app.get("/sendAnswer", function(req,res){
   }else{
     res.send("false");
   }*/
-  res.redirect(req.get('referer'));
-  //res.send("correct");
+  //res.redirect(req.get('referer'));
+  res.send("correct");
 
+});
+app.get("/home", function(req, res){
+  sess = req.session;
+  if(Active_IDs[sess.id].inProg){
+    Active_IDs[sess.id].inProg = false;
+  }
+  res.redirect("/index.html");
 });
 
 app.get("/qs", function(req, res){

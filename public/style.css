@@ -308,6 +308,19 @@ input[type=text]:hover{
   margin: 10px;
   font-size: 48;
 }
+#home{
+  font-family: 'arial';
+  color:var(--color-primary-0);
+  margin: 10px;
+  font-size: 48;
+}
+#home:hover{
+  font-family: 'arial';
+  color:var(--color-primary-0);
+  margin: 10px;
+  font-size: 48;
+  text-decoration: none;
+}
 
 #right-menu-div{
   display: flex;
