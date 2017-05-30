@@ -15,6 +15,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true
   }));
+
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
@@ -222,7 +223,7 @@ app.post("/index.html", function(req, res){
   sess = req.session;
   console.log(req.body);
   res.status(202).end();
-  res.redirect(req.get('referer'));
+  //res.redirect(req.get('referer'));
 });
 
 app.get("/getPlayerData", function(req, res){
