@@ -34,12 +34,22 @@ function getQ(){
     console.log(dat);
   });
 }
-function sendAnswer(){
-  console.log("sendAnswer");
-  $.getJSON("/sendAnswer", {q:$("q-answer").value}, function(dat, stat){
 
+$(document).keypress(function(e) {
+    if(e.which == 13) {
+        if(document.getElementById("q-answer").value.length > 0){
+          sendAnswer();
+        }
+    }
+});
+
+function sendAnswer(){
+  console.log("sendAnswer was called");
+  $.post("/sendAnswer", {answer: document.getElementById("q-answer").value}, function(dat, stat){
   });
 }
+
+
 function skip(){
 
 }

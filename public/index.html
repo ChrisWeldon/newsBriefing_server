@@ -4,7 +4,7 @@
   <script  type ="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script type ="text/javascript" src="index.js"></script>
   <link href="dist/css/bootstrap.css" rel="stylesheet">
-  <link rel="stylesheet" type='text/css' href="green-color-scheme.css">
+  <!--<link rel="stylesheet" type='text/css' href="green-color-scheme.css">-->
   <link rel="stylesheet" type='text/css' href="style.css">
 </head>
 <body>
@@ -27,13 +27,13 @@
             <h1 id="question">*question*</h1>
           </div>
           <div class="response-group">
-            <form method="get">
-              <input name="answer" type="text" id="q-answer" placeholder="Answer here...">
-              <span>
-                <!--class="input-group-btn"-->
-                <button class="gbutton" type="submit">Guess!</button>
-              </span>
-            </form>
+
+            <input name="answer" type="text" id="q-answer" placeholder="Answer here..." autofocus>
+            <span>
+              <!--class="input-group-btn"-->
+              <button class="gbutton" onclick="sendAnswer()">Guess!</button>
+            </span>
+
           </div>
           <div id="qcontrol">
             <button class="btn" id="exit" onclick="exit()">Exit</button>

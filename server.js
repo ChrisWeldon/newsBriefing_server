@@ -180,26 +180,29 @@ var qNum = 0;  //temporary tracker variable
 
 
 app.get("/", function(req, res){
-  console.log("New User!");
-  sess = req.session;
-  if(sess.visited){
-    //TODO get ID and determine which questions they have seen
-    // and which one they were on
+  if(!req.query.answer){
+    console.log("New User!");
+    sess = req.session;
+    if(sess.visited){
+      //TODO get ID and determine which questions they have seen
+      // and which one they were on
 
-    console.log("sess was visited");
-  }else{
-    sess.visited = true;
-    sess.id = generateID();
-    console.log("sess was not visited");
-    Active_IDs[sess.id] = {
-      questions_seen: [],
-      inProg: false,
-      current_q: null,
-      correct: "tbd"
+      console.log("sess was visited");
+    }else{
+      sess.visited = true;
+      sess.id = generateID();
+      console.log("sess was not visited");
+      Active_IDs[sess.id] = {
+        questions_seen: [],
+        inProg: false,
+        current_q: null,
+        correct: "tbd"
+      }
     }
+    res.redirect('index.html');
+  }else{
+    console.log("query exists, forgoing new user process");
   }
-  res.redirect('index.html');
-
 });
 
 app.use(express.static('public'));
@@ -212,8 +215,7 @@ app.get("/qs/:qid", function(req, res){
 app.get("/get-question", function(req, res){
   sess = req.session;
 
-  console.log(Active_IDs[sess.id].questions_seen);
-
+  console.log("questions seen" + Active_IDs[sess.id].questions_seen);
   Active_IDs[sess.id].current_q = 3;
   res.send(tempQuestions[Active_IDs[sess.id].current_q]);
   //TODO rework
@@ -243,18 +245,13 @@ app.get("/startQuiz", function(req,res){
   res.send(Active_IDs[sess.id]);
 });
 
-app.get("/sendAnswer", function(req,res){
-  sess = req.session;
-  console.log("query is "+ req.query);
-  /*if(Active_IDs[sess.id].correct != "done" && req.query == tempQuestions[Active_IDs[sess.id].current_q.num].answer){
-    res.send("correct");
-  }else{
-    res.send("false");
-  }*/
-  //res.redirect(req.get('referer'));
-  res.send("correct");
 
+app.post("/sendAnswer", function(req, res){
+  sess = req.session;
+  answer = req.body.answer;
+  console.log("sendAnswer post recieved: "+ req.body.answer);
 });
+
 app.get("/home", function(req, res){
   sess = req.session;
   if(Active_IDs[sess.id].inProg){
