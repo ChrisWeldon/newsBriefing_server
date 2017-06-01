@@ -151,6 +151,17 @@ questions = crawlWorldNews(function(){
   console.log("cycleDone callback called!");
 });
 
+function isCorrect(word, sess){
+  //TODO answer cruncher goes here
+  console.log(tempQuestions[Active_IDs[sess.id].current_q].answer);
+  if(tempQuestions[Active_IDs[sess.id].current_q].answer == word){
+    return true;
+  }else {
+    return false;
+  }
+}
+
+
 //PLAYER JSON FRAMEWORK
 /*
 sess{
@@ -195,7 +206,7 @@ app.get("/", function(req, res){
       Active_IDs[sess.id] = {
         questions_seen: [],
         inProg: false,
-        current_q: null,
+        current_q: 0,
         correct: "tbd"
       }
     }
@@ -214,9 +225,9 @@ app.get("/qs/:qid", function(req, res){
 
 app.get("/get-question", function(req, res){
   sess = req.session;
-
   console.log("questions seen" + Active_IDs[sess.id].questions_seen);
-  Active_IDs[sess.id].current_q = 3;
+  Active_IDs[sess.id].current_q = Active_IDs[sess.id].current_q++;
+
   res.send(tempQuestions[Active_IDs[sess.id].current_q]);
   //TODO rework
 });
@@ -250,6 +261,12 @@ app.post("/sendAnswer", function(req, res){
   sess = req.session;
   answer = req.body.answer;
   console.log("sendAnswer post recieved: "+ req.body.answer);
+  Active_IDs[sess.id].questions_seen.push(Active_IDs[sess.id].current_q);
+  res.send({
+    correct: isCorrect(answer, sess),
+    link: tempQuestions[Active_IDs[sess.id].current_q].link,
+    answer: tempQuestions[Active_IDs[sess.id].current_q].answer
+  });
 });
 
 app.get("/home", function(req, res){

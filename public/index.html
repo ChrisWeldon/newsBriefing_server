@@ -6,6 +6,7 @@
   <link href="dist/css/bootstrap.css" rel="stylesheet">
   <!--<link rel="stylesheet" type='text/css' href="green-color-scheme.css">-->
   <link rel="stylesheet" type='text/css' href="style.css">
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Hammersmith+One" />
 </head>
 <body>
   <div class="main-body">
@@ -24,7 +25,7 @@
       <div id="qbody">
         <div id="question-response">
           <div id="question-div">
-            <h1 id="question">*question*</h1>
+            <h1 id="question"></h1>
           </div>
           <div class="response-group">
 
@@ -38,8 +39,14 @@
           <div id="qcontrol">
             <button class="btn" id="exit" onclick="exit()">Exit</button>
             <!--<button class="btn" id="hint">Hint</button>-->
+            <div id="answer-div">
+              <h1 id="answer-pass">CORRECT</h1>
+              <a href="" id="answer-link" target="_blank">website here</a>
+              <p id="answer-passage">blah blah, the first paragraph of the article goes here<p>
+            </div>
             <button class="btn" id="skip" onclick="skip()">Skip</button>
           </div>
+          <button class="btn" id="nextbtn" onclick="next()">Next</button>
         </div>
         <div id=picture-underlay>
           <div id="gradient"></div>
