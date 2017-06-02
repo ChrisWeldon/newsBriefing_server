@@ -88,7 +88,6 @@ function sendAnswer(){
 }
 function next(){
   getQ(function(){
-    alert("getQ callback called");
     $("#q-answer").removeAttr("disabled");
     $(".gbutton").removeAttr("disabled");
   });
