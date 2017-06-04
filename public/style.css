@@ -95,6 +95,16 @@ body{
   0%{top: -200px;}
   100%{top: 0px;}
 }
+
+.answer-dissa{
+  animation-name: slide-up;
+  animation-duration: .7s;
+  animation-fill-mode: both;
+}
+@keyframes slide-up {
+  0%{top: 0px;}
+  100%{top: -200px;}
+}
 #start-button{
   background-color: var(--color-secondary-1-1);//#3333ff;
   border: none;

@@ -10,6 +10,13 @@ $(document).ready(function() {
   });
 });
 
+function updateState(){
+  $.getJSON("/get-state", {}, function(dat, stat){
+    console.log("dat");
+  });
+}
+
+
 function startQuiz(){
   console.log("startQuiz");
   $.getJSON("/startQuiz", {}, function(dat, stat){  //TODO combine this and /get player data with URL query
@@ -82,16 +89,24 @@ function sendAnswer(){
     $("#answer-link").addClass("answer-appear").text(dat.link);
     $("#answer-link").attr("href", dat.link)
     $("#answer-passage").addClass("answer-appear").text("coming soon");
-    $("nextbtn").addClass("answer-appear");
 
   });
 }
 function next(){
   getQ(function(){
+    $("q-answer").addClass("answer-dissa");
+    $("answer-link").addClass("answer-dissa");
+    $("answer-passage").addClass("answer-dissa");
+    $("answer-pass").addClass("answer-dissa");
     $("#q-answer").removeAttr("disabled");
     $(".gbutton").removeAttr("disabled");
+    $("#q-answer").removeClass("answer-appear");
+    $("#answer-link").removeClass("answer-appear");
+    $("#answer-pass").removeClass("answer-appear");
+    $("#answer-passage").removeClass("answer-appear");
   });
 }
+
 
 
 function skip(){
