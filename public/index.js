@@ -1,4 +1,5 @@
 
+var state;
 
 $(document).ready(function() {
   var playerData = $.getJSON("/getPlayerData",{}, function(dat, stat){
@@ -8,11 +9,18 @@ $(document).ready(function() {
     }else{
     }
   });
+  state = $.getJSON("/get-state", {}, function(dat, stat){
+    
+  });
 });
 
 function updateState(){
   $.getJSON("/get-state", {}, function(dat, stat){
-    console.log("dat");
+    var serverState = dat;
+    if(state != serverState){
+
+    }
+
   });
 }
 
@@ -104,6 +112,8 @@ function next(){
     $("#answer-link").removeClass("answer-appear");
     $("#answer-pass").removeClass("answer-appear");
     $("#answer-passage").removeClass("answer-appear");
+
+    updateState();
   });
 }
 
