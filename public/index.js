@@ -1,6 +1,4 @@
 
-var state;
-
 $(document).ready(function() {
   var playerData = $.getJSON("/getPlayerData",{}, function(dat, stat){
     console.log(dat);
@@ -9,23 +7,8 @@ $(document).ready(function() {
     }else{
     }
   });
-  state = $.getJSON("/get-state", {}, function(dat, stat){
-    state = dat;
-    console.log("state: " + dat);
-  });
 });
 
-function updateState(){
-  $.getJSON("/get-state", {}, function(dat, stat){
-    var serverState = dat;
-    if(state != serverState){
-      if(state.answered){
-
-      }
-    }
-
-  });
-}
 
 
 function startQuiz(){
@@ -82,6 +65,7 @@ function sendAnswer(){
   $.post("/sendAnswer", {answer: document.getElementById("q-answer").value}, function(dat, stat){
     $("#q-answer").attr("disabled", "disabled");
     $(".gbutton").attr("disabled", "disabled");
+    $("#nextbtn").removeAttr("disabled");
     $("#answer-pass").addClass("answer-appear").text(function(){
       if(dat.correct){
         return "CORRECT";
@@ -99,24 +83,21 @@ function sendAnswer(){
     });
     $("#answer-link").addClass("answer-appear").text(dat.link);
     $("#answer-link").attr("href", dat.link)
-    $("#answer-passage").addClass("answer-appear").text("coming soon");
+    $("#answer-passage").addClass("answer-appear").text("passage from article coming soon");
 
+    $("#nextbtn").addClass("fade-in")
   });
 }
 function next(){
   getQ(function(){
-    $("q-answer").addClass("answer-dissa");
-    $("answer-link").addClass("answer-dissa");
-    $("answer-passage").addClass("answer-dissa");
-    $("answer-pass").addClass("answer-dissa");
     $("#q-answer").removeAttr("disabled");
     $(".gbutton").removeAttr("disabled");
     $("#q-answer").removeClass("answer-appear");
     $("#answer-link").removeClass("answer-appear");
     $("#answer-pass").removeClass("answer-appear");
     $("#answer-passage").removeClass("answer-appear");
-
-    updateState();
+    $("#nextbtn").attr("disabled", "disabled");
+    $("#nextbtn").removeClass("fade-in");
   });
 }
 
