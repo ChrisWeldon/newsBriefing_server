@@ -10,7 +10,8 @@ $(document).ready(function() {
     }
   });
   state = $.getJSON("/get-state", {}, function(dat, stat){
-    
+    state = dat;
+    console.log("state: " + dat);
   });
 });
 
@@ -18,7 +19,9 @@ function updateState(){
   $.getJSON("/get-state", {}, function(dat, stat){
     var serverState = dat;
     if(state != serverState){
+      if(state.answered){
 
+      }
     }
 
   });
