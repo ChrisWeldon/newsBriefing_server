@@ -249,7 +249,7 @@ body{
 }
 #nextbtn{
   position: relative;
-  top: -100px;
+  top: -10px;
   font-size: 20;
   font-family: "Hammersmith One";
   width:40%;
