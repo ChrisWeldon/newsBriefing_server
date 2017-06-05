@@ -161,6 +161,10 @@ function isCorrect(word, sess){
   }
 }
 
+function checkStateAccuracy(cientState, serverState){
+  return true; //TODO make this actually work
+}
+
 
 //PLAYER JSON FRAMEWORK
 /*
@@ -174,7 +178,12 @@ Active_IDs {
     questions_seen:
     inProg:
     current_q:
-    correct: <done/tbd>
+    //New State stuff
+    STATE: {
+      q-reveal: false,
+      inProg: false,
+      answered: false,
+    }
   }
   <id> {
     ...
@@ -207,7 +216,11 @@ app.get("/", function(req, res){
         questions_seen: [],
         inProg: false,
         current_q: 0,
-        correct: "tbd"
+        STATE: {
+          qreveal: false,
+          inProg: false, //not in use rn, will switch over when appropriate
+          answered: false
+        }
       }
     }
     res.redirect('index.html');
@@ -226,7 +239,7 @@ app.get("/qs/:qid", function(req, res){
 app.get("/get-question", function(req, res){
   sess = req.session;
   console.log("questions seen" + Active_IDs[sess.id].questions_seen);
-  Active_IDs[sess.id].current_q = Active_IDs[sess.id].current_q++;
+  Active_IDs[sess.id].current_q = Active_IDs[sess.id].current_q + 1;
 
   res.send(tempQuestions[Active_IDs[sess.id].current_q]);
   //TODO rework
@@ -239,7 +252,36 @@ app.post("/index.html", function(req, res){
   //res.redirect(req.get('referer'));
 });
 
-app.get("/getPlayerData", function(req, res){
+app.get("/get-state", function(req, res){
+  sess = req.session;
+  clientState = req.body.STATE;
+  res.send(Active_IDs[sess.id].STATE);
+});
+
+
+//not in use yet
+app.post("/change-state", function(req, res){
+  sess = req.session;
+  var serverState = Active_IDs[sess.id].STATE;
+  var clientState = req.body.STATE;
+  if(checkStateAccuracy(clientState, serverState)){
+    var change = req.body.change;
+    var changeVal = req.body.value;
+    switch(change){
+      case "answered":
+        if(changeVal == true || changeVal == false){
+          Active_IDs[sess.id].STATE["answered"] = changeVal;
+        }
+        break;
+
+      case "qreveal":
+        break;
+    }
+    return Active_IDs[sess.id].STATE;
+  }
+});
+
+app.get("/getPlayerData", function(req, res){ //this will be deprecated after state fix
   sess = req.session;
   console.log(Active_IDs[sess.id]);
   res.send(Active_IDs[sess.id]);

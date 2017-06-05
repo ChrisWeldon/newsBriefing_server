@@ -95,6 +95,16 @@ body{
   0%{top: -200px;}
   100%{top: 0px;}
 }
+
+.answer-dissa{
+  animation-name: slide-up;
+  animation-duration: .7s;
+  animation-fill-mode: both;
+}
+@keyframes slide-up {
+  0%{top: 0px;}
+  100%{top: -200px;}
+}
 #start-button{
   background-color: var(--color-secondary-1-1);//#3333ff;
   border: none;
@@ -244,7 +254,19 @@ body{
   font-family: "Hammersmith One";
   width:40%;
   align-self: center;
+  opacity: 0;
 }
+
+.fade-in{
+  animation-name: in-fade;
+  animation-duration: .7s;
+  animation-fill-mode: both;
+}
+@keyframes in-fade {
+  0%{opacity: 0}
+  100%{opacity: 1}
+}
+
 
 #q-blank{
   text-decoration: underline;
@@ -284,7 +306,7 @@ input[type=text]:hover{
   flex-grow: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 #content-sidebar{

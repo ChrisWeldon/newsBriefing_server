@@ -1,5 +1,4 @@
 
-
 $(document).ready(function() {
   var playerData = $.getJSON("/getPlayerData",{}, function(dat, stat){
     console.log(dat);
@@ -9,6 +8,8 @@ $(document).ready(function() {
     }
   });
 });
+
+
 
 function startQuiz(){
   console.log("startQuiz");
@@ -64,6 +65,7 @@ function sendAnswer(){
   $.post("/sendAnswer", {answer: document.getElementById("q-answer").value}, function(dat, stat){
     $("#q-answer").attr("disabled", "disabled");
     $(".gbutton").attr("disabled", "disabled");
+    $("#nextbtn").removeAttr("disabled");
     $("#answer-pass").addClass("answer-appear").text(function(){
       if(dat.correct){
         return "CORRECT";
@@ -81,17 +83,24 @@ function sendAnswer(){
     });
     $("#answer-link").addClass("answer-appear").text(dat.link);
     $("#answer-link").attr("href", dat.link)
-    $("#answer-passage").addClass("answer-appear").text("coming soon");
-    $("nextbtn").addClass("answer-appear");
+    $("#answer-passage").addClass("answer-appear").text("passage from article coming soon");
 
+    $("#nextbtn").addClass("fade-in")
   });
 }
 function next(){
   getQ(function(){
     $("#q-answer").removeAttr("disabled");
     $(".gbutton").removeAttr("disabled");
+    $("#q-answer").removeClass("answer-appear");
+    $("#answer-link").removeClass("answer-appear");
+    $("#answer-pass").removeClass("answer-appear");
+    $("#answer-passage").removeClass("answer-appear");
+    $("#nextbtn").attr("disabled", "disabled");
+    $("#nextbtn").removeClass("fade-in");
   });
 }
+
 
 
 function skip(){
