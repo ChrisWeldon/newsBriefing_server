@@ -257,6 +257,10 @@ body{
   opacity: 0;
 }
 
+#stage-image{
+  
+}
+
 .fade-in{
   animation-name: in-fade;
   animation-duration: .7s;
