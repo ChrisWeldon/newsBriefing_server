@@ -5,8 +5,10 @@ var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 var app = express();
-require("./parseTitle.js");
+var levDistance = require("./LevDistance.js");
+var parseTitle = require("./parseTitle.js");
 
+console.log("lev distance : "+levDistance("Donald", "Eric"));
 app.set('views', './views');
 app.set('view engine', 'pug');
 

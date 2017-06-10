@@ -1,4 +1,4 @@
-parseTitle = function(title){
+module.exports = function(title){
   var string = title;
   var fills = [];
   var returnArray = [];
