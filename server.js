@@ -156,7 +156,7 @@ questions = crawlWorldNews(function(){
 function isCorrect(word, sess){
   //TODO answer cruncher goes here
   console.log(tempQuestions[Active_IDs[sess.id].current_q].answer);
-  if(tempQuestions[Active_IDs[sess.id].current_q].answer == word){
+  if(levDistance(tempQuestions[Active_IDs[sess.id].current_q].answer , word)<=3){
     return true;
   }else {
     return false;
