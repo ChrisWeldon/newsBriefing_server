@@ -7,8 +7,9 @@ var bodyParser = require('body-parser');
 var app = express();
 var levDistance = require("./LevDistance.js");
 var parseTitle = require("./parseTitle.js");
+var fs = require("file-system");
 
-console.log("lev distance : "+levDistance("Donald", "Eric"));
+console.log("lev distance : "+ levDistance("Donald", "Eric"));
 app.set('views', './views');
 app.set('view engine', 'pug');
 
@@ -16,7 +17,7 @@ app.use(session({
   secret: 'secret',
   resave: true,
   saveUninitialized: true
-  }));
+}));
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -80,7 +81,7 @@ collectArticles = function($, callback) {
   titleLinks.each(function() {
       var url = $(this).attr('href');
 
-      if(url.indexOf("www.theguardian.com")> -1){
+      if(false){
         return;
       }else{
         request(url, function(error, response, body){
@@ -299,7 +300,137 @@ app.get("/startQuiz", function(req,res){
   }
   res.send(Active_IDs[sess.id]);
 });
+//---------------Stuff for the data collection --------------
+var pos = require('pos');
+var dataset_file_path = "dataset/";
+var dataset_file = "dataset.json";
+var data_point = {};
+var title_track = -1;
+var label_array = [];
 
+function cap_dist(word_pos, sent_array){
+  var cap_num = 0;
+  var cap_distance = 0;
+  for(var i=0; i<sent_array.length; i++){
+    if(/^[A-Z]/.test(sent_array[i])){
+      console.log("word "+ i + " is capitalized");
+      cap_distance = cap_distance + Math.abs(word_pos - i)
+      cap_num++;
+    }
+  }
+  if(cap_num > 0){
+    return cap_distance/cap_num;
+  }else{
+    return 0;
+  }
+}
+function getCap(sent_array){
+  var cap_num = 0;
+  for(var i=0; i<sent_array.length; i++){
+    if(/^[A-Z]/.test(sent_array[i])){
+      cap_num++;
+    }
+  }
+  return cap_num;
+}
+
+function digit_dist(word_pos, sent_array){
+  var digit_num = 0;
+  var digit_distance = 0;
+  for(var i=0; i<sent_array.length; i++){
+    if(/\d+/g.test(sent_array[i])){
+      console.log("word "+ i + " is a digit");
+      digit_distance = digit_distance + Math.abs(word_pos - i)
+      digit_num++;
+    }
+  }
+  if(digit_num > 0){
+    return digit_distance/digit_num;
+  }else{
+    return 0;
+  }
+}
+
+
+app.post("/sendLabel", function(req, res){
+  if(req.body.labels){
+    label_array = req.body.labels;
+  }
+  console.log(req.body.labels);
+  res.send("labels recieved form server post 'sendLabel'");
+});
+app.get("/dataset.json", function(req, res){
+  res.send("["+fs.readFileSync("dataset/dataset.json", "utf8").slice(0, -1)+"]");
+});
+
+app.get("/getTitle", function(req, res){
+  if(title_track >= 0){
+    console.log("title_track is now greater than 0");
+    var word_lab;
+    var word;
+    var tagged_word;
+
+
+
+    var lexer = new pos.Lexer()
+    var tagger = new pos.Tagger();
+
+
+    for(var i = 0; i<tempQuestions[title_track].title.split(" ").length; i++){
+      word = tempQuestions[title_track].title.split(" ")[i];
+      tagged_word = tagger.tag(lexer.lex(word));
+
+      if(label_array != []){
+        if(label_array.indexOf(i.toString()) > -1){
+          word_lab = true;
+        }
+      }else{
+        word_lab = false;
+      }
+      data_point = {word: word,
+                    word_label: word_lab,
+                    word_num: i,
+                    word_num_cont: (word.match(/\d+/g)!= null),
+                    word_length: word.length ,
+                    word_cap: /[A-Z]/.test( word[0]),
+                    word_percent_symbol: (word.indexOf("%") > -1),
+                    word_pos: i/tempQuestions[title_track].title.split(" ").length,
+                    word_card_num: (["CD"].indexOf(tagged_word[0][1])>-1),
+                    word_noun: (["NN","NNP", "NNS", "NNPS"].indexOf(tagged_word[0][1]) > -1),
+                    sent_word_num: tempQuestions[title_track].title.split(" ").length,
+                    sent_word_verb: (["VB","VBD", "VBG", "VBN", "VBP", "VBZ"].indexOf(tagged_word[0][1]) > -1),
+                    sent_$: tempQuestions[title_track].title.indexOf("$") > -1,
+                    sent_percent_symbol:(word.indexOf("%") > -1),
+                    word_hyph: (word.indexOf("-") > -1),
+                    sent_cap: getCap(tempQuestions[title_track].title.split(" "))/tempQuestions[title_track].title.split(" ").length,
+                    sent_num_cont: (tempQuestions[title_track].title.match(/\d+/g)!= null),
+                    avg_dist_cap: cap_dist(i, tempQuestions[title_track].title.split(" ")),
+                    avg_dist_digit: digit_dist(i, tempQuestions[title_track].title.split(" "))
+                  };
+
+      fs.appendFile("dataset/dataset.json", JSON.stringify(data_point) + ",", function (err) {
+        if (err) throw err;
+        console.log("data point appended: "+ data_point);
+      });
+
+
+    }
+    console.log(label_array);
+
+    //console.log(data_array);
+  }
+  label_array = [];
+  console.log(label_array);
+
+  title_track++;
+
+  var sent = tempQuestions[title_track].title;
+  //console.log(sent);
+  res.send(sent.split(" "));
+});
+
+
+//-----------------------------------------------------------
 
 app.post("/sendAnswer", function(req, res){
   sess = req.session;
