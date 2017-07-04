@@ -308,7 +308,7 @@ var data_point = {};
 var title_track = -1;
 var label_array = [];
 
-function cap_dist(word_pos, sent_array){
+function cap_dist(word_pos, sent_array){ //deprecated
   var cap_num = 0;
   var cap_distance = 0;
   for(var i=0; i<sent_array.length; i++){
@@ -334,7 +334,7 @@ function getCap(sent_array){
   return cap_num;
 }
 
-function digit_dist(word_pos, sent_array){
+function digit_dist(word_pos, sent_array){ //deprecated
   var digit_num = 0;
   var digit_distance = 0;
   for(var i=0; i<sent_array.length; i++){
@@ -349,6 +349,61 @@ function digit_dist(word_pos, sent_array){
   }else{
     return 0;
   }
+}
+
+
+function regex_dist_object(word_pos, sent_array, regex){
+  var return_object = {};
+
+  for(var key in regex){
+      if(regex.hasOwnProperty(key)){
+      var instance_num = 0;
+      var tot_distance = 0;
+      for(var j=0; j<sent_array.length; j++){
+        if(regex[key].test(sent_array[j])){
+          tot_distance = tot_distance + Math.abs(word_pos - j)
+          instance_num++;
+        }
+      }
+      if(instance_num > 0){
+        return_object[key] = (tot_distance/instance_num);
+      }else{
+        return_object[key] = 0;
+      }
+    }
+  }
+  return(return_object);
+}
+
+
+function creatPointWithLabel(word_num, sentence, label, lexer, tagger){ //sentence must be in string form
+  word = sentence.split(" ")[word_num];
+  sentence_array = sentence.split(" ");
+  regex_distances = regex_dist_object(word_num, sentence_array, {"digit": /\d+/g , "capital": /[A-Z]/ });
+  tagged_word = tagger.tag(lexer.lex(word));
+
+  data_point = {word: word,
+                word_label: label,
+                word_num: word_num,
+                word_num_cont: (word.match(/\d+/g)!= null),
+                word_length: word.length ,
+                word_cap: /[A-Z]/.test( word[0]),
+                word_percent_symbol: (word.indexOf("%") > -1),
+                word_pos: word_num/sentence_array.length,
+                word_card_num: (["CD"].indexOf(tagged_word[0][1])>-1),
+                word_noun: (["NN","NNP", "NNS", "NNPS"].indexOf(tagged_word[0][1]) > -1),
+                word_hyph: (word.indexOf("-") > -1),
+                sent_word_num: sentence_array.length,
+                sent_word_verb: (["VB","VBD", "VBG", "VBN", "VBP", "VBZ"].indexOf(tagged_word[0][1]) > -1),
+                sent_$: sentence_array.indexOf("$") > -1,
+                sent_percent_symbol:(word.indexOf("%") > -1),
+                sent_hyph:(sentence.indexOf("-") > -1),
+                sent_cap: getCap(sentence_array)/sentence_array.length,
+                sent_num_cont: (sentence.match(/\d+/g)!= null),
+                avg_dist_cap: regex_distances["capital"],
+                avg_dist_digit: regex_distances["digit"]
+              };
+    return data_point;
 }
 
 
@@ -367,18 +422,11 @@ app.get("/getTitle", function(req, res){
   if(title_track >= 0){
     console.log("title_track is now greater than 0");
     var word_lab;
-    var word;
-    var tagged_word;
-
-
-
     var lexer = new pos.Lexer()
     var tagger = new pos.Tagger();
 
 
     for(var i = 0; i<tempQuestions[title_track].title.split(" ").length; i++){
-      word = tempQuestions[title_track].title.split(" ")[i];
-      tagged_word = tagger.tag(lexer.lex(word));
 
       if(label_array != []){
         if(label_array.indexOf(i.toString()) > -1){
@@ -387,28 +435,8 @@ app.get("/getTitle", function(req, res){
       }else{
         word_lab = false;
       }
-      data_point = {word: word,
-                    word_label: word_lab,
-                    word_num: i,
-                    word_num_cont: (word.match(/\d+/g)!= null),
-                    word_length: word.length ,
-                    word_cap: /[A-Z]/.test( word[0]),
-                    word_percent_symbol: (word.indexOf("%") > -1),
-                    word_pos: i/tempQuestions[title_track].title.split(" ").length,
-                    word_card_num: (["CD"].indexOf(tagged_word[0][1])>-1),
-                    word_noun: (["NN","NNP", "NNS", "NNPS"].indexOf(tagged_word[0][1]) > -1),
-                    sent_word_num: tempQuestions[title_track].title.split(" ").length,
-                    sent_word_verb: (["VB","VBD", "VBG", "VBN", "VBP", "VBZ"].indexOf(tagged_word[0][1]) > -1),
-                    sent_$: tempQuestions[title_track].title.indexOf("$") > -1,
-                    sent_percent_symbol:(word.indexOf("%") > -1),
-                    word_hyph: (word.indexOf("-") > -1),
-                    sent_cap: getCap(tempQuestions[title_track].title.split(" "))/tempQuestions[title_track].title.split(" ").length,
-                    sent_num_cont: (tempQuestions[title_track].title.match(/\d+/g)!= null),
-                    avg_dist_cap: cap_dist(i, tempQuestions[title_track].title.split(" ")),
-                    avg_dist_digit: digit_dist(i, tempQuestions[title_track].title.split(" "))
-                  };
 
-      fs.appendFile("dataset/dataset.json", JSON.stringify(data_point) + ",", function (err) {
+      fs.appendFile("dataset/dataset.json", JSON.stringify(creatPointWithLabel(i,tempQuestions[title_track].title, word_lab, lexer, tagger)) + ",", function (err) {
         if (err) throw err;
         console.log("data point appended: "+ data_point);
       });
