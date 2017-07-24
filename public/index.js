@@ -28,7 +28,7 @@ function getQ(){
   $.getJSON("/get-question", {}, function(dat, stat){
     var q = dat.question;
     var bnum = Array(dat.answer.length).join(String.fromCharCode(127));
-    q = q.replace("*a","<span id='q-blank'>"+bnum + "</span>");
+    q = q.replace("*a","<span id='q-blank'><span id='q-hint'>sdhfhdsakfhkasdlf</span>"+bnum + "</span>");
     $("#question").empty();
     $("#question").append(q);
     $("#picture-underlay").addClass("slide-left");
@@ -54,9 +54,9 @@ function getQ(callback){
 
 $(document).keypress(function(e) {
     if(e.which == 13) {
-        if(document.getElementById("q-answer").value.length > 0){
-          sendAnswer();
-        }
+      if(document.getElementById("q-answer").value.length > 0){
+        sendAnswer();
+      }
     }
 });
 

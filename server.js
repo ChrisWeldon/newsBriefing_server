@@ -8,8 +8,8 @@ var app = express();
 var levDistance = require("./LevDistance.js");
 var parseTitle = require("./parseTitle.js");
 var fs = require("file-system");
+var rebuildSentWCache = require("./cacher.js");
 
-console.log("lev distance : "+ levDistance("Donald", "Eric"));
 app.set('views', './views');
 app.set('view engine', 'pug');
 
@@ -29,7 +29,7 @@ var tempQuestions = [];
 var questions = [];
 
 var SERVER_STATE;
-
+//addCache("Robert Mueller");
 
 var surveySize = 24;
 
@@ -73,6 +73,8 @@ collectInternalLinks = function($) {
   console.log("Found " + allAbsoluteLinks.length + " absolute links");
 }
 
+var cache_array = JSON.parse(fs.readFileSync("caches/name-bank.json", "utf8").slice(0, -1)+"}");
+
 collectArticles = function($, callback) {
   SERVER_STATE = "UPDATING_ARTICLES";
   var cycleCount = 0;
@@ -80,6 +82,7 @@ collectArticles = function($, callback) {
   var finishedPushing = false;
   titleLinks.each(function() {
       var url = $(this).attr('href');
+      var articleQInfo = parseTitle(rebuildSentWCache($(this).text(), cache_array, false));
 
       if(false){
         return;
@@ -91,7 +94,7 @@ collectArticles = function($, callback) {
             // Parse the document body
             var tempTitle = {};
             var $ = cheerio.load(body);
-            var articleQInfo = parseTitle($('title').text());
+            //var articleQInfo = parseTitle(rebuildSentWCache($(this).text(), cache_array, false)); //$('title').text()
             //console.log("ARTICLE Page title:  " + $('title').text());
             tempTitle["link"] = url;
             tempTitle["title"] = articleQInfo["input"];
@@ -99,7 +102,8 @@ collectArticles = function($, callback) {
             tempTitle["answer"] = articleQInfo[0];
             console.log("no problem connecting indivdual articles #" + cycleCount);
             if(articleQInfo != []){
-            tempQuestions.push(tempTitle);
+              console.log(tempTitle["title"]);
+              tempQuestions.push(tempTitle);
             }
 
             if(cycleCount == surveySize){
@@ -112,7 +116,6 @@ collectArticles = function($, callback) {
     }
   });
 }
-
 
 var contains = function(needle) {
     // Per spec, the way to identify NaN is that it is not equal to itself
@@ -218,6 +221,10 @@ app.get("/", function(req, res){
       Active_IDs[sess.id] = {
         questions_seen: [],
         inProg: false,
+        finished: false,
+        today: {
+          correct: 0
+        },
         current_q: 0,
         STATE: {
           qreveal: false,
@@ -241,10 +248,15 @@ app.get("/qs/:qid", function(req, res){
 
 app.get("/get-question", function(req, res){
   sess = req.session;
-  console.log("questions seen" + Active_IDs[sess.id].questions_seen);
   Active_IDs[sess.id].current_q = Active_IDs[sess.id].current_q + 1;
-
-  res.send(tempQuestions[Active_IDs[sess.id].current_q]);
+  console.log("temp questions length: " + tempQuestions.length);
+  console.log("current_q: " + Active_IDs[sess.id].current_q )
+  if(parseInt(Active_IDs[sess.id].current_q) < tempQuestions.length){
+    res.send(tempQuestions[Active_IDs[sess.id].current_q]);
+  }else{
+    console.log("its all over")
+    res.send("Its all over");
+  }
   //TODO rework
 });
 
@@ -300,30 +312,30 @@ app.get("/startQuiz", function(req,res){
   }
   res.send(Active_IDs[sess.id]);
 });
+
+
+var cache_array = JSON.parse(fs.readFileSync("caches/name-bank.json", "utf8").slice(0, -1)+"}");
+
+
 //---------------Stuff for the data collection --------------
 var pos = require('pos');
 var dataset_file_path = "dataset/";
 var dataset_file = "dataset.json";
-var data_point = {};
 var title_track = -1;
 var label_array = [];
 
-function cap_dist(word_pos, sent_array){ //deprecated
-  var cap_num = 0;
-  var cap_distance = 0;
-  for(var i=0; i<sent_array.length; i++){
-    if(/^[A-Z]/.test(sent_array[i])){
-      console.log("word "+ i + " is capitalized");
-      cap_distance = cap_distance + Math.abs(word_pos - i)
-      cap_num++;
-    }
-  }
-  if(cap_num > 0){
-    return cap_distance/cap_num;
-  }else{
-    return 0;
+function addCache(name){
+  var word_array = name.toLowerCase().split(" ");
+  var words;
+  for(var i=0; i<word_array.length; i++){
+    var words = word_array.slice();
+    words.splice(i, 1);
+    fs.appendFile("caches/name-bank.json", '"'+ word_array[i]+ '":["'+ words +'"],', function (err) {
+      if (err) throw err;
+    });
   }
 }
+
 function getCap(sent_array){
   var cap_num = 0;
   for(var i=0; i<sent_array.length; i++){
@@ -334,20 +346,39 @@ function getCap(sent_array){
   return cap_num;
 }
 
-function digit_dist(word_pos, sent_array){ //deprecated
-  var digit_num = 0;
-  var digit_distance = 0;
+function getCached(sent_array){
+  var cache_num = 0;
   for(var i=0; i<sent_array.length; i++){
-    if(/\d+/g.test(sent_array[i])){
-      console.log("word "+ i + " is a digit");
-      digit_distance = digit_distance + Math.abs(word_pos - i)
-      digit_num++;
+    if(sent_array[i].indexOf("*c")>-1){
+      cache_num++;
     }
   }
-  if(digit_num > 0){
-    return digit_distance/digit_num;
+  return cache_num;
+}
+
+function isCached(word){
+  if(word.indexOf("*c")>-1){
+    return true;
   }else{
-    return 0;
+    return false;
+  }
+}
+
+function getDoubleCached(sent_array){
+  var cache_num = 0;
+  for(var i=0; i<sent_array.length; i++){
+    if(sent_array[i].indexOf("*%")>-1){
+      cache_num++;
+    }
+  }
+  return cache_num;
+}
+
+function isDoubleCached(word){
+  if(word.indexOf("*%")>-1){
+    return true;
+  }else{
+    return false;
   }
 }
 
@@ -368,43 +399,106 @@ function regex_dist_object(word_pos, sent_array, regex){
       if(instance_num > 0){
         return_object[key] = (tot_distance/instance_num);
       }else{
-        return_object[key] = 0;
+        return_object[key] = -1;
       }
     }
   }
   return(return_object);
 }
 
+function double_cached_dist(word_pos, sent_array){
+  var instance_num = 0;
+  var tot_distance = 0;
+  var return_distance;
+  for(var j=0; j<sent_array.length; j++){
+    if(sent_array[j].indexOf("*%") > -1){
+      tot_distance = tot_distance + Math.abs(word_pos - j)
+      instance_num++;
+    }
+  }
+  if(instance_num > 0){
+    return_distance = (tot_distance/instance_num);
+  }else{
+    return_distance = -1;
+  }
+  return return_distance;
+}
+
+function cached_dist(word_pos, sent_array){
+  var instance_num = 0;
+  var tot_distance = 0;
+  var return_distance;
+  for(var j=0; j<sent_array.length; j++){
+    if(sent_array[j].indexOf("*c")>-1){
+      tot_distance = tot_distance + Math.abs(word_pos - j)
+      instance_num++;
+    }
+  }
+  if(instance_num > 0){
+    return_distance = (tot_distance/instance_num);
+  }else{
+    return_distance = -1;
+  }
+  return return_distance;
+}
+console.log("cached dist: "+ cached_dist(2, ["*cDonald", "the", "man", "is", "in", "*cKorea", "right", "now"]));
+
+function noun_dist(word_pos, sent_array, lexer, tagger){ //deprecated
+  var noun_num = 0;
+  var noun_distance = 0;
+  var tagged_word;
+
+  for(var i=0; i<sent_array.length; i++){
+    tagged_word = tagger.tag(lexer.lex(sent_array[i]));
+    if(["NN","NNP", "NNS", "NNPS"].indexOf(tagged_word[0][1]) > -1){
+      noun_distance = noun_distance + Math.abs(word_pos - i)
+      noun_num++;
+    }
+  }
+  if(noun_num > 0){
+    return noun_distance/noun_num;
+  }else{
+    return -1;
+  }
+}
+
 
 function creatPointWithLabel(word_num, sentence, label, lexer, tagger){ //sentence must be in string form
   word = sentence.split(" ")[word_num];
   sentence_array = sentence.split(" ");
-  regex_distances = regex_dist_object(word_num, sentence_array, {"digit": /\d+/g , "capital": /[A-Z]/ });
+  regex_distances = regex_dist_object(word_num, sentence_array, {"digit": /\d/ , "capital": /[A-Z]/ });
   tagged_word = tagger.tag(lexer.lex(word));
 
-  data_point = {word: word,
+  var data_point = {word: word,
                 word_label: label,
                 word_num: word_num,
                 word_num_cont: (word.match(/\d+/g)!= null),
                 word_length: word.length ,
                 word_cap: /[A-Z]/.test( word[0]),
-                word_percent_symbol: (word.indexOf("%") > -1),
+                word_symbol: (word.indexOf(":") > -1),
                 word_pos: word_num/sentence_array.length,
                 word_card_num: (["CD"].indexOf(tagged_word[0][1])>-1),
                 word_noun: (["NN","NNP", "NNS", "NNPS"].indexOf(tagged_word[0][1]) > -1),
                 word_hyph: (word.indexOf("-") > -1),
+                word_cached: isCached(word),
+                word_double_cache: isDoubleCached(word),
                 sent_word_num: sentence_array.length,
-                sent_word_verb: (["VB","VBD", "VBG", "VBN", "VBP", "VBZ"].indexOf(tagged_word[0][1]) > -1),
+                word_verb: (["VB","VBD", "VBG", "VBN", "VBP", "VBZ"].indexOf(tagged_word[0][1]) > -1),
                 sent_$: sentence_array.indexOf("$") > -1,
-                sent_percent_symbol:(word.indexOf("%") > -1),
                 sent_hyph:(sentence.indexOf("-") > -1),
                 sent_cap: getCap(sentence_array)/sentence_array.length,
                 sent_num_cont: (sentence.match(/\d+/g)!= null),
                 avg_dist_cap: regex_distances["capital"],
-                avg_dist_digit: regex_distances["digit"]
+                avg_dist_digit: regex_distances["digit"],
+                avg_dist_noun: noun_dist(word_num, sentence_array, lexer, tagger),
+                avg_dist_cached: cached_dist(word_num, sentence_array),
+                sent_cached: getCached(sentence_array)/sentence_array.length,
+                double_cached_dist: double_cached_dist(word_num, sentence_array),
+                sent_double_cached: getDoubleCached(sentence_array)/sentence_array.length
               };
     return data_point;
 }
+
 
 
 app.post("/sendLabel", function(req, res){
@@ -415,7 +509,7 @@ app.post("/sendLabel", function(req, res){
   res.send("labels recieved form server post 'sendLabel'");
 });
 app.get("/dataset.json", function(req, res){
-  res.send("["+fs.readFileSync("dataset/dataset.json", "utf8").slice(0, -1)+"]");
+  res.send("["+fs.readFileSync("dataset/dataset_full.json", "utf8").slice(0, -1)+"]");
 });
 
 app.get("/getTitle", function(req, res){
@@ -431,14 +525,13 @@ app.get("/getTitle", function(req, res){
       if(label_array != []){
         if(label_array.indexOf(i.toString()) > -1){
           word_lab = true;
+        }else{
+          word_lab = false;
         }
-      }else{
-        word_lab = false;
       }
 
       fs.appendFile("dataset/dataset.json", JSON.stringify(creatPointWithLabel(i,tempQuestions[title_track].title, word_lab, lexer, tagger)) + ",", function (err) {
         if (err) throw err;
-        console.log("data point appended: "+ data_point);
       });
 
 
@@ -465,6 +558,9 @@ app.post("/sendAnswer", function(req, res){
   answer = req.body.answer;
   console.log("sendAnswer post recieved: "+ req.body.answer);
   Active_IDs[sess.id].questions_seen.push(Active_IDs[sess.id].current_q);
+  if(isCorrect(answer, sess)){
+    Active_IDs[sess.id].today.correct++;
+  }
   res.send({
     correct: isCorrect(answer, sess),
     link: tempQuestions[Active_IDs[sess.id].current_q].link,

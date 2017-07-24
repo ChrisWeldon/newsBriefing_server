@@ -1,5 +1,12 @@
+rebuildSentWCache = require("./cacher");
+var fs = require("file-system");
+
+
+var cache_array = JSON.parse(fs.readFileSync("caches/name-bank.json", "utf8").slice(0, -1)+"}");
+
+
 module.exports = function(title){
-  var string = title;
+  var string = rebuildSentWCache(title, cache_array, false);
   var fills = [];
   var returnArray = [];
   //editing the string to make good title

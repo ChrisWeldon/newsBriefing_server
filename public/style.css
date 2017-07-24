@@ -275,6 +275,12 @@ body{
 
 #q-blank{
   text-decoration: underline;
+  position:relative;
+}
+#q-hint{
+  position: absolute;
+  background-color: green;
+  opacity: .5;
 }
 
 .response-group{
