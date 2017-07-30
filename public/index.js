@@ -25,19 +25,22 @@ function openMenu(){
 
 function getQ(){
   console.log("getQ");
-  $.getJSON("/get-question", {}, function(dat, stat){
-    var q = dat.question;
-    var bnum = Array(dat.answer.length).join(String.fromCharCode(127));
-    q = q.replace("*a","<span id='q-blank'><span id='q-hint'>sdhfhdsakfhkasdlf</span>"+bnum + "</span>");
-    $("#question").empty();
-    $("#question").append(q);
-    $("#picture-underlay").addClass("slide-left");
-    $("#start-form").addClass("fade-away");
-    console.log(dat);
+  $.getJSON("/getPlayerData", {}, function(p_dat, stat){
+    $.getJSON("/get-question", {}, function(dat, stat){
+      console.log(p_dat);
+      var q = dat.question;
+      var bnum = Array(dat.answer.length).join(String.fromCharCode(127));
+      q = q.replace("*a","<span id='q-blank'><span id='q-hint'></span>"+bnum + "</span>");
+      $("#question").empty();
+      $("#question").append(q);
+      $("#picture-underlay").addClass("slide-left");
+      $("#start-form").addClass("fade-away");
+      console.log(dat);
+    });
   });
 }
 //override for callback function
-function getQ(callback){
+/*function getQ(callback){
   console.log("getQ");
   $.getJSON("/get-question", {}, function(dat, stat){
     var q = dat.question;
@@ -50,7 +53,7 @@ function getQ(callback){
     console.log(dat);
     callback();
   });
-}
+}*/
 
 $(document).keypress(function(e) {
     if(e.which == 13) {

@@ -10,6 +10,14 @@ var parseTitle = require("./parseTitle.js");
 var fs = require("file-system");
 var rebuildSentWCache = require("./cacher.js");
 
+
+var spawn = require('child_process').spawn,
+    py    = spawn('python', ['parse_title_3.0.py']),
+    data = [1,2,3,4,5,6,7,8,9],
+    dataString = '';
+
+
+
 app.set('views', './views');
 app.set('view engine', 'pug');
 
@@ -32,6 +40,7 @@ var SERVER_STATE;
 //addCache("Robert Mueller");
 
 var surveySize = 24;
+
 
 crawlWorldNews = function(callback){
   var pageToVisit = "https://www.reddit.com/r/worldnews/";
@@ -147,7 +156,6 @@ var contains = function(needle) {
 function generateID(){
   var hex_id;
   var numberId = Math.floor((Math.random() * 10000) + 1);
-  console.log("generating ID");
   hex_id = numberId.toString(16);
   console.log("the id that was generated is: "+ hex_id);
   return hex_id;
@@ -221,10 +229,6 @@ app.get("/", function(req, res){
       Active_IDs[sess.id] = {
         questions_seen: [],
         inProg: false,
-        finished: false,
-        today: {
-          correct: 0
-        },
         current_q: 0,
         STATE: {
           qreveal: false,
@@ -248,15 +252,10 @@ app.get("/qs/:qid", function(req, res){
 
 app.get("/get-question", function(req, res){
   sess = req.session;
+  console.log("questions seen" + Active_IDs[sess.id].questions_seen);
   Active_IDs[sess.id].current_q = Active_IDs[sess.id].current_q + 1;
-  console.log("temp questions length: " + tempQuestions.length);
-  console.log("current_q: " + Active_IDs[sess.id].current_q )
-  if(parseInt(Active_IDs[sess.id].current_q) < tempQuestions.length){
-    res.send(tempQuestions[Active_IDs[sess.id].current_q]);
-  }else{
-    console.log("its all over")
-    res.send("Its all over");
-  }
+
+  res.send(tempQuestions[Active_IDs[sess.id].current_q]);
   //TODO rework
 });
 
@@ -316,6 +315,30 @@ app.get("/startQuiz", function(req,res){
 
 var cache_array = JSON.parse(fs.readFileSync("caches/name-bank.json", "utf8").slice(0, -1)+"}");
 
+/*function rebuildSentWCache(sentence, cache, update_cache){
+  var sen_array = sentence.split(" ");
+  var cache_upt = cache;
+  var return_sen = "";
+  if(update_cache){
+    cache_upt = JSON.parse(fs.readFileSync("caches/name-bank.json", "utf8").slice(0, -1)+"}");
+  }
+
+  for(var word in sen_array){
+
+    if(cache_upt[sen_array[word].toLowerCase()]){ // if the word is in the cache
+      for(var item in cache_upt[sen_array[word].toLowerCase()]){ //loop through all the possible partner words
+        if(sen_array[parseInt(word)+1].toLowerCase() == cache_upt[sen_array[word].toLowerCase()][item]){ //if the word matches a partner item
+          sen_array[parseInt(word)] = sen_array[parseInt(word)] + "*%" + sen_array[parseInt(word) + 1];
+          sen_array.splice(parseInt(word)+1, 1);
+          break;
+        }
+      }
+    }
+    return_sen = return_sen + sen_array[word] + " "; //rebuild the sentence
+  }
+  return(return_sen.trim());
+}
+*/
 
 //---------------Stuff for the data collection --------------
 var pos = require('pos');
@@ -553,14 +576,23 @@ app.get("/getTitle", function(req, res){
 
 //-----------------------------------------------------------
 
+py.stdout.on('data', function(data){
+  dataString += data.toString();
+});
+
+py.stdout.on('end', function(){
+  console.log('Sum of numbers=',dataString);
+});
+py.stdin.write(JSON.stringify(data));
+py.stdin.end();
+
+
 app.post("/sendAnswer", function(req, res){
   sess = req.session;
   answer = req.body.answer;
   console.log("sendAnswer post recieved: "+ req.body.answer);
   Active_IDs[sess.id].questions_seen.push(Active_IDs[sess.id].current_q);
-  if(isCorrect(answer, sess)){
-    Active_IDs[sess.id].today.correct++;
-  }
+
   res.send({
     correct: isCorrect(answer, sess),
     link: tempQuestions[Active_IDs[sess.id].current_q].link,
