@@ -1,6 +1,10 @@
 import sys, json, numpy as np
+from sklearn.externals import joblib
+import sklearn
+import _pickle as pkl
+import pandas as pd
 
-
+model = pkl.load(open("Clf.clf", "rb"))
 #Read data from stdin
 def read_in():
     lines = sys.stdin.readlines()
@@ -8,18 +12,10 @@ def read_in():
     return json.loads(lines[0])
 
 def main():
-    #get our data as an array from read_in()
-    lines = read_in()
+    data = []
 
-    #create a numpy array
-    np_lines = np.array(lines)
-
-    #use numpys sum method to find sum of all elements in the array
-    lines_sum = np.sum(np_lines)
-
-    #return the sum to the output stream
-    print lines_sum
-
-#start process
+    d = pd.read_json(sys.stdin.readlines()[0])
+    print(model.predict(d))
+    sys.stdout.flush()
 if __name__ == '__main__':
     main()

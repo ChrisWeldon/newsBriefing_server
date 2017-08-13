@@ -9,12 +9,12 @@ var levDistance = require("./LevDistance.js");
 var parseTitle = require("./parseTitle.js");
 var fs = require("file-system");
 var rebuildSentWCache = require("./cacher.js");
+var pos = require('pos');
+var RSVP = require('RSVP');
 
 
-var spawn = require('child_process').spawn,
-    py    = spawn('python', ['parse_title_3.0.py']),
-    data = [1,2,3,4,5,6,7,8,9],
-    dataString = '';
+var lexer = new pos.Lexer()
+var tagger = new pos.Tagger();
 
 
 
@@ -84,6 +84,9 @@ collectInternalLinks = function($) {
 
 var cache_array = JSON.parse(fs.readFileSync("caches/name-bank.json", "utf8").slice(0, -1)+"}");
 
+
+
+
 collectArticles = function($, callback) {
   SERVER_STATE = "UPDATING_ARTICLES";
   var cycleCount = 0;
@@ -91,8 +94,7 @@ collectArticles = function($, callback) {
   var finishedPushing = false;
   titleLinks.each(function() {
       var url = $(this).attr('href');
-      var articleQInfo = parseTitle(rebuildSentWCache($(this).text(), cache_array, false));
-
+      var articleQInfo = parseTitle(rebuildSentWCache($(this).text(), cache_array, false), tagger, lexer);
       if(false){
         return;
       }else{
@@ -341,7 +343,6 @@ var cache_array = JSON.parse(fs.readFileSync("caches/name-bank.json", "utf8").sl
 */
 
 //---------------Stuff for the data collection --------------
-var pos = require('pos');
 var dataset_file_path = "dataset/";
 var dataset_file = "dataset.json";
 var title_track = -1;
@@ -464,7 +465,6 @@ function cached_dist(word_pos, sent_array){
   }
   return return_distance;
 }
-console.log("cached dist: "+ cached_dist(2, ["*cDonald", "the", "man", "is", "in", "*cKorea", "right", "now"]));
 
 function noun_dist(word_pos, sent_array, lexer, tagger){ //deprecated
   var noun_num = 0;
@@ -524,6 +524,8 @@ function creatPointWithLabel(word_num, sentence, label, lexer, tagger){ //senten
 
 
 
+
+
 app.post("/sendLabel", function(req, res){
   if(req.body.labels){
     label_array = req.body.labels;
@@ -539,9 +541,6 @@ app.get("/getTitle", function(req, res){
   if(title_track >= 0){
     console.log("title_track is now greater than 0");
     var word_lab;
-    var lexer = new pos.Lexer()
-    var tagger = new pos.Tagger();
-
 
     for(var i = 0; i<tempQuestions[title_track].title.split(" ").length; i++){
 
@@ -575,16 +574,6 @@ app.get("/getTitle", function(req, res){
 
 
 //-----------------------------------------------------------
-
-py.stdout.on('data', function(data){
-  dataString += data.toString();
-});
-
-py.stdout.on('end', function(){
-  console.log('Sum of numbers=',dataString);
-});
-py.stdin.write(JSON.stringify(data));
-py.stdin.end();
 
 
 app.post("/sendAnswer", function(req, res){
