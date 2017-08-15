@@ -3,81 +3,81 @@ var fs = require("file-system");
 
 //var spawn = require("child_process").spawn
 
-
-
-//var cache_array = JSON.parse(fs.readFileSync("caches/name-bank.json", "utf8").slice(0, -1)+"}");
-
-
 module.exports = function(title, tagger, lexer){
-  var sent = title //rebuildSentWCache(title, cache_array, false);
-  var fills = [];
-  var returnArray = [];
-  var word_num;
-  var tagged_word;
-  var data_points = [];
-  var spawn = require("child_process").spawn;
-  var py = spawn('python3', ['parse_title_3.0.py']);
+  return new Promise(function(resolve, reject){
+    var sent = title //rebuildSentWCache(title, cache_array, false);
+    var fills = {};
+    var returnArray = [];
+    var word_num;
+    var tagged_word;
+    var data_points = [];
+    var spawn = require("child_process").spawn;
+    var py = spawn('python3', ['parse_title_3.0.py']);
 
-  py.stdout.on('data', function(data){
-    var answers = []
-    for(var i=0; i< data.length; i++){
-      if(data[i] == "True"){
-        answers.push(i);
+    py.stdout.on('data', function(data){
+
+      data = parse_python_array(data.toString('utf8'));
+
+
+      var answers = [];
+      for(var i=0; i < data.length; i++){
+        if(data[i] == true){
+          answers.push(i);
+        }
       }
+      var rand = Math.floor(Math.random() * answers.length)
+
+      fills["input"] = sent;
+      fills["question"] = title.replace(title.split(" ")[answers[rand]], "*a");
+      fills["answer"] = title.split(" ")[answers[rand]]//title.split(" ")[answers[rand]];
+      resolve(fills);
+
+    });
+
+    py.stdout.on('end', function(){
+    });
+
+    py.stdout.on('error', function(err){
+      console.log("PYTHON ERROR: " + err);
+      reject("PYTHON ERROR: " + err);
+    });
+
+    for(var i = 0; i < sent.split(" ").length; i++){
+      var word_num = i;
+
+      word = sent.split(" ")[i];
+      sent_array = sent.split(" ");
+      tagged_word = tagger.tag(lexer.lex(word));
+      regex_distances = regex_dist_object(word_num, sent_array, {"digit": /\d/ , "capital": /[A-Z]/ });
+      //py = spawn('python3', ['parse_title_3.0.py']);
+      point = {
+              word_num: word_num,
+              word_num_cont: (word.match(/\d+/g)!= null),
+              word_length: word.length ,
+              word_cap: /[A-Z]/.test( word[0]),
+              word_pos: word_num/sent_array.length,
+              word_card_num: (["CD"].indexOf(tagged_word[0][1])>-1),
+              word_noun: (["NN","NNP", "NNS", "NNPS"].indexOf(tagged_word[0][1]) > -1),
+              word_hyph: (word.indexOf("-") > -1),
+              word_cached: isCached(word),
+              word_double_cache: isDoubleCached(word),
+              sent_word_num: sent_array.length,
+              word_verb: (["VB","VBD", "VBG", "VBN", "VBP", "VBZ"].indexOf(tagged_word[0][1]) > -1),
+              sent_$: sent_array.indexOf("$") > -1,
+              sent_hyph:(sent.indexOf("-") > -1),
+              sent_cap: getCap(sent_array)/sent_array.length,
+              avg_dist_cap: regex_distances["capital"],
+              avg_dist_noun: noun_dist(word_num, sent_array, lexer, tagger),
+              avg_dist_cached: cached_dist(word_num, sent_array),
+              sent_cached: getCached(sent_array)/sent.length,
+              sent_double_cached: getDoubleCached(sent_array)/sent_array.length
+            };
+      data_points.push(point);
     }
-    var rand = Math.floor(Math.random() * answers.length)
-    fills["input"] = sent;
-    fills["question"] = title.replace();
-    fills["answer"] = title.split(" ")[answers[rand]];
-    return fills;
-    //console.log("the data: " + data.toString())
 
+    py.stdin.write(JSON.stringify(data_points));
+    py.stdin.end();
   });
-
-  py.stdout.on('end', function(){
-
-  });
-
-  py.stdout.on('error', function(err){
-    console.log("PYTHON ERROR: " + err);
-  });
-
-  for(var i = 0; i < sent.split(" ").length; i++){
-    var word_num = i;
-
-    word = sent.split(" ")[i];
-    sent_array = sent.split(" ");
-    tagged_word = tagger.tag(lexer.lex(word));
-    regex_distances = regex_dist_object(word_num, sent_array, {"digit": /\d/ , "capital": /[A-Z]/ });
-    //py = spawn('python3', ['parse_title_3.0.py']);
-    point = {
-            word_num: word_num,
-            word_num_cont: (word.match(/\d+/g)!= null),
-            word_length: word.length ,
-            word_cap: /[A-Z]/.test( word[0]),
-            word_pos: word_num/sent_array.length,
-            word_card_num: (["CD"].indexOf(tagged_word[0][1])>-1),
-            word_noun: (["NN","NNP", "NNS", "NNPS"].indexOf(tagged_word[0][1]) > -1),
-            word_hyph: (word.indexOf("-") > -1),
-            word_cached: isCached(word),
-            word_double_cache: isDoubleCached(word),
-            sent_word_num: sent_array.length,
-            word_verb: (["VB","VBD", "VBG", "VBN", "VBP", "VBZ"].indexOf(tagged_word[0][1]) > -1),
-            sent_$: sent_array.indexOf("$") > -1,
-            sent_hyph:(sent.indexOf("-") > -1),
-            sent_cap: getCap(sent_array)/sent_array.length,
-            avg_dist_cap: regex_distances["capital"],
-            avg_dist_noun: noun_dist(word_num, sent_array, lexer, tagger),
-            avg_dist_cached: cached_dist(word_num, sent_array),
-            sent_cached: getCached(sent_array)/sent.length,
-            sent_double_cached: getDoubleCached(sent_array)/sent_array.length
-          };
-    data_points.push(point);
-  }
-
-  py.stdin.write(JSON.stringify(data_points));
-  py.stdin.end();
-
 }
 
 //------------------------Functions to be modulated----------------------
@@ -205,4 +205,20 @@ function noun_dist(word_pos, sent_array, lexer, tagger){ //deprecated
   }else{
     return -1;
   }
+}
+
+function parse_python_array(str){
+  str = str.replace("[", "");
+  str = str.replace("]","");
+  str = str.replace(/\n/g,"");
+  var str_array = str.split(" ");
+  var return_array = []
+  for(var i=0; i<str_array.length; i++){
+    if(str_array[i] == "True"){
+      return_array.push(true);
+    }else if(str_array[i]=="False"){
+      return_array.push(false);
+    }
+  }
+  return return_array;
 }

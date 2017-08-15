@@ -28,6 +28,7 @@ function getQ(){
   $.getJSON("/getPlayerData", {}, function(p_dat, stat){
     $.getJSON("/get-question", {}, function(dat, stat){
       console.log(p_dat);
+      console.log(dat);
       var q = dat.question;
       var bnum = Array(dat.answer.length).join(String.fromCharCode(127));
       q = q.replace("*a","<span id='q-blank'><span id='q-hint'></span>"+bnum + "</span>");

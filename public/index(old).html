@@ -1,0 +1,99 @@
+<DOCTYPE html>
+<head>
+  <title>OPEN SCREEN</title>
+  <script  type ="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script type ="text/javascript" src="index.js"></script>
+  <link href="dist/css/bootstrap.css" rel="stylesheet">
+  <!--<link rel="stylesheet" type='text/css' href="green-color-scheme.css">-->
+  <link rel="stylesheet" type='text/css' href="style.css">
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Hammersmith+One" />
+  <link rel="stylesheet" type='text/css' href="animate.css">
+</head>
+<body>
+  <div class="main-body">
+    <div class="Header">
+      <h1 class='title'><a href="/home" id="home">Learn Current Events</a></h1>
+      <div id="right-menu-div">
+        <!--<div id="header-links">
+          <a href="" class="links">login</a>
+          <a href="" class="links">sign up</a>
+        </div>-->
+        <!--<button class="menu" onclick="openMenu()"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></button>-->
+      </div>
+    </div>
+
+    <div class="Body">
+      <div id="qbody">
+        <div id="question-response">
+          <div id="question-div">
+            <h1 id="question"></h1>
+          </div>
+          <div class="response-group">
+
+            <input name="answer" type="text" id="q-answer" placeholder="Answer here..." autofocus>
+            <span>
+              <!--class="input-group-btn"-->
+              <button class="gbutton" onclick="sendAnswer()">Guess!</button>
+            </span>
+
+          </div>
+          <div id="qcontrol">
+            <!--<button class="btn" id="hint">Hint</button>-->
+            <div id="answer-div">
+              <h1 id="answer-pass">CORRECT</h1>
+              <a href="" id="answer-link" target="_blank">website here</a>
+              <p id="answer-passage">blah blah, the first paragraph of the article goes here<p>
+            </div>
+          </div>
+          <button class="btn" id="nextbtn" onclick="next()">Next</button>
+        </div>
+        <div id=picture-underlay>
+          <div id="gradient"></div>
+          <img id="state-image" src="serbia-protest.jpg" >
+          <div id="start-form">
+            <input id="start-button" type="button" value="Today's News" class="link-button" onclick="startQuiz()"/>
+          </div>
+        </div>
+        <div id= "footer-links">
+          <a href="">contact us</a>
+          <a href="">submit feedback</a>
+          <a href="">about us</a>
+        </div>
+      </div>
+      <!--<div id="content-sidebar">
+        <div id="quotes">
+          <p>“Whatever the cost of our libraries,<br>
+            the price is cheap compared to that<br>
+           of an ignorant nation.” </p>
+           <h2>&#822 Walter Cronkite<h2>
+        </div>
+        <div id= "footer-links">
+          <a href="">contact</a>
+          <a href="">feedback</a>
+          <a href="">about</a>
+        </div>
+    </div>-->
+    </div>
+</div>
+<div class = "about-body">
+  <h1>About</h1>
+  <div id="about-sec">
+    <p>The goal of Learn Current Events is to improve the general public's awareness of global events through testing users with procedurally generated questions.
+      We use the Machine learning technique of classification to continually improve the quality of the questions as users answer them. We are aware that not every question
+      is perfect, although we are constantly working to improve them. Each question is the title of an article sited in the answer response. We encourage each and every user
+      to visit and read each article. Especially the ones that you answered incorrectly.</p>
+      <!--<h3>About the Creator:</h3>
+      <p>Chris Evans is student at the Maine School of Science and Mathematics in Limestone Maine. He began studying Computer Science in early middle school while living in Portland Maine.
+      He transfered to MSSM after the 9th grade where he began expand his experience to web and app development.</p>-->
+  </div>
+  <div id="profile">
+    <img id="profile-pic" src="/profile_pic.jpg">
+    <span id="profile-name">Chris Evans</span>
+    <span id="profile-loc">Portland, ME</span>
+    <a id="profile-email" href="mailto:cwenans612@gmail">cwevans612@gmail.com</a>
+    <a href="https://github.com/ChrisWeldon"><img src="/GitHub-Mark.png"></a>
+  </div>
+  <div>
+  </div>
+</div>
+<body>

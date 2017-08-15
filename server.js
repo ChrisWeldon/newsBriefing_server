@@ -10,7 +10,6 @@ var parseTitle = require("./parseTitle.js");
 var fs = require("file-system");
 var rebuildSentWCache = require("./cacher.js");
 var pos = require('pos');
-var RSVP = require('RSVP');
 
 
 var lexer = new pos.Lexer()
@@ -44,7 +43,6 @@ var surveySize = 24;
 
 crawlWorldNews = function(callback){
   var pageToVisit = "https://www.reddit.com/r/worldnews/";
-  var finalQs;
   var finishedW = false;
   console.log("Visiting page " + pageToVisit);
   request(pageToVisit, function(error, response, body) {
@@ -56,7 +54,7 @@ crawlWorldNews = function(callback){
        var $ = cheerio.load(body);
        console.log("Page title:  " + $('title').text());
        collectInternalLinks($);
-       finalQs = collectArticles($, callback);
+       collectArticles($, callback);
      }else{
        console.log("Status code: " + response.statusCode);
      }
@@ -95,36 +93,36 @@ collectArticles = function($, callback) {
   titleLinks.each(function() {
       var url = $(this).attr('href');
       var articleQInfo = parseTitle(rebuildSentWCache($(this).text(), cache_array, false), tagger, lexer);
-      if(false){
-        return;
-      }else{
-        request(url, function(error, response, body){
-          if(error) {
-            console.log("Error: " + error);       // Check status code (200 is HTTP OK)
-          }else if(response.statusCode === 200) { //console.log("Status code: " + response.statusCode);
-            // Parse the document body
-            var tempTitle = {};
-            var $ = cheerio.load(body);
-            //var articleQInfo = parseTitle(rebuildSentWCache($(this).text(), cache_array, false)); //$('title').text()
-            //console.log("ARTICLE Page title:  " + $('title').text());
-            tempTitle["link"] = url;
-            tempTitle["title"] = articleQInfo["input"];
-            tempTitle["question"] = articleQInfo["question"];
-            tempTitle["answer"] = articleQInfo[0];
-            console.log("no problem connecting indivdual articles #" + cycleCount);
-            if(articleQInfo != []){
-              console.log(tempTitle["title"]);
-              tempQuestions.push(tempTitle);
-            }
 
-            if(cycleCount == surveySize){
-              finishedPushing = true;
-              callback();
+      articleQInfo.then(function(result){ //RESOLVING PROMISE
+        //console.log(articleQInfo);
+        if(false){
+          return;
+        }else{
+          request(url, function(error, response, body){
+            if(error) {
+              console.log("Error: " + error);       // Check status code (200 is HTTP OK)
+            }else if(response.statusCode === 200) { //console.log("Status code: " + response.statusCode);
+              var tempTitle = {};
+              var $ = cheerio.load(body);
+              tempTitle["link"] = url;
+              tempTitle["title"] = result["input"];
+              tempTitle["question"] = result["question"];
+              tempTitle["answer"] = result["answer"];
+              if(articleQInfo != []){
+                tempQuestions.push(tempTitle);
+              }
+
+              if(cycleCount == surveySize){
+                finishedPushing = true;
+                callback();
+              }
+              cycleCount++
             }
-            cycleCount++
-          }
-      });
-    }
+          });
+        }
+
+      }, function(err){console.log(err)});
   });
 }
 
