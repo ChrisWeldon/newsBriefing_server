@@ -105,6 +105,23 @@ collectArticles = function($, callback) {
             }else if(response.statusCode === 200) { //console.log("Status code: " + response.statusCode);
               var tempTitle = {};
               var $ = cheerio.load(body);
+              var all_p = $("p");
+              all_p.each(function(){
+                if($(this).text().length>150){
+                  tempTitle["passage"] = $(this).text();
+                }
+              });
+              //console.log("PASSAGE: " + tempTitle["passage"]);
+              var source;
+              if(url.indexOf("https")>-1 && url.indexOf(".com")){
+                source = url.slice(url.indexOf("https://")+8, url.indexOf(".com")+4);
+              }else if(url.indexOf("http")>-1 && url.indexOf(".com")){
+                source = url.slice(url.indexOf("http://")+7, url.indexOf(".com")+4);
+              }else{
+                source = url;
+              }
+              console.log(source);
+              tempTitle["source"] = source;
               tempTitle["link"] = url;
               tempTitle["title"] = result["input"];
               tempTitle["question"] = result["question"];
@@ -583,7 +600,9 @@ app.post("/sendAnswer", function(req, res){
   res.send({
     correct: isCorrect(answer, sess),
     link: tempQuestions[Active_IDs[sess.id].current_q].link,
-    answer: tempQuestions[Active_IDs[sess.id].current_q].answer
+    answer: tempQuestions[Active_IDs[sess.id].current_q].answer,
+    passage: tempQuestions[Active_IDs[sess.id].current_q].passage,
+    source: tempQuestions[Active_IDs[sess.id].current_q].source
   });
 });
 

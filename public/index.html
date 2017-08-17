@@ -41,35 +41,39 @@
     </div>
 
     <div id="quiz-cont" class="jumbotron container-fluid">
-      <h1>Today's News</h1>
+      <h1 class="text-center title">Today's News</h1>
       <div class="row">
         <div class="col-sm-12">
           <div class="panel panel-default q-panel">
-            <p class="panel-body" id="question">Question goes here</p>
+            <h2 class="panel-body" id="question">Question goes here</h2>
           </div>
         </div>
       </div>
       <div class = "row">
-        <div class="col-sm-8"><input type="text" class="form-control" id="q-answer"></div>
-        <div class="col-sm-4"><button type="button" class="btn btn-primary btn-block" onclick="sendAnswer()">answer</button></div>
+        <div class="col-sm-8"><input type="text" class="form-control input-lg" id="q-answer"></div>
+        <div class="col-sm-4"><button id="answer-btn" type="button" class="btn btn-primary btn-block btn-lg" onclick="sendAnswer()">answer</button></div>
       </div>
 
       <div class="row">
-        <div class="col-sm-12 text-center answer">
-          <div id="answer-div" class="animated fadeOutRight">
-            <h2 id="answer-pass">CORRECT</h2>
-            <a href="" id="answer-link" target="_blank">website here</a>
-            <button class="btn" style="width:20%" id="nextbtn" onclick="next()">Next</button>
+        <div id="answer-div" class="col-sm-6 text-center answer animated fadeOutDown">
+          <div>
+            <h1 id="answer-pass">CORRECT</h1>
+            <a href="" id="answer-link" target="_blank">website here</a><br>
           </div>
         </div>
+        <div id="passage-panel" class="col-sm-6 text-center animate passage-panel animated fadeOut">
+          <q id="passage"></q><br>
+            <h5 id="source"></h5>
+        </div>
       </div>
-      <div class="row">
+      <div class="row text-center">
+        <button class="btn" style="width:20%" id="nextbtn" onclick="next()">Next</button>
       </div>
     </div>
 
-    <div id="about-bar" class="jumbotron text-center">
+    <!--<div id="about-bar" class="jumbotron text-center">
       <h1>About</h1>
-    </div>
+    </div>-->
 
 
 

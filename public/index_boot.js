@@ -58,7 +58,14 @@ function sendAnswer(){
       }else{
         return "INCORRECT";
       }
+    }).css("color", function(){
+      if(dat.correct){
+        return "green";
+      }else{
+        return "red";
+      }
     });
+
     $("#q-blank").text(dat.answer);
     $("#q-blank").css("color", function(){
       if(dat.correct){
@@ -69,22 +76,42 @@ function sendAnswer(){
     });
     $("#answer-link").text(dat.link);
     $("#answer-link").attr("href", dat.link);
-    
-    $("#answer-div").removeClass("fadeOutRight");
+    console.log(dat);
+    if(dat.passage.length>0){
+        $("#passage").text(dat.passage);
+    }else{
+      $("#passage").text("");
+    }
+    if(dat.passage.length>0){
+        $("#source").text("\u2013 " +  dat.source);
+        $("#passage-panel").removeClass("fadeOut");
+        void $("answer-div").offsetWidth;
+        $("#passage-panel").addClass("fadeIn");
+    }
+    $("#answer-div").removeClass("fadeOutDown");
     void $("answer-div").offsetWidth;
-    $("#answer-div").addClass("fadeInLeft");
+    $("#answer-div").addClass("fadeInDown");
+
+
+    $("#q-answer").attr("disabled", "disabled");
+    $("#answer-btn").attr("disabled","disabled");
+    $("#nextbtn").removeAttr("disabled");
   });
 }
 function next(){
   getQ(function(){
 
     console.log("next callback called");
-    // $("#q-answer").removeClass("disabled");
-    // $(".gbutton").removeClass("disabled");
-    // $("#answer-pass").removeClass("answer-appear");
-    $("#answer-div").removeClass("fadeInLeft");
-    void $("answer-div").offsetWidth;
-    $("#answer-div").addClass("fadeOutRight");
+    $("#q-answer").removeAttr("disabled");
+    $("#answer-btn").removeAttr("disabled");
+    $("#nextbtn").attr("disabled", "disabled");
+    $("#q-answer").val("");
+    $("#answer-div").removeClass("fadeInDown");
+    void $("#answer-div").offsetWidth;
+    $("#answer-div").addClass("fadeOutDown");
+    $("#passage-panel").removeClass("fadeIn");
+    void $("#answer-div").offsetWidth;
+    $("#passage-panel").addClass("fadeOut");
   });
 }
 
