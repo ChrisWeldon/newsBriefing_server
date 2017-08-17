@@ -77,12 +77,12 @@ function sendAnswer(){
     $("#answer-link").text(dat.link);
     $("#answer-link").attr("href", dat.link);
     console.log(dat);
-    if(dat.passage.length>0){
+    if(dat.passage){
         $("#passage").text(dat.passage);
     }else{
       $("#passage").text("");
     }
-    if(dat.passage.length>0){
+    if(dat.source){
         $("#source").text("\u2013 " +  dat.source);
         $("#passage-panel").removeClass("fadeOut");
         void $("answer-div").offsetWidth;

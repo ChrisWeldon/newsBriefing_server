@@ -271,9 +271,13 @@ app.get("/get-question", function(req, res){
   sess = req.session;
   console.log("questions seen" + Active_IDs[sess.id].questions_seen);
   Active_IDs[sess.id].current_q = Active_IDs[sess.id].current_q + 1;
-
-  res.send(tempQuestions[Active_IDs[sess.id].current_q]);
-  //TODO rework
+  if(Active_IDs[sess.id].current_q <= tempQuestions.length){
+    res.send(tempQuestions[Active_IDs[sess.id].current_q]);
+  }else{
+    res.send({question: "NO MORE QUESTIONS FOR TODAY",
+              answer: "",
+              link: ""});
+  }
 });
 
 app.post("/index.html", function(req, res){
