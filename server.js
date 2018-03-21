@@ -10,6 +10,7 @@ var parseTitle = require("./parseTitle.js");
 var fs = require("file-system");
 var rebuildSentWCache = require("./cacher.js");
 var pos = require('pos');
+var crawler = require("./crawler.js");
 
 
 var lexer = new pos.Lexer()
@@ -120,7 +121,7 @@ collectArticles = function($, callback) {
               }else{
                 source = url;
               }
-              console.log(source);
+              //console.log(source);
               tempTitle["source"] = source;
               tempTitle["link"] = url;
               tempTitle["title"] = result["input"];
@@ -178,9 +179,19 @@ function generateID(){
   return hex_id;
 }
 
-questions = crawlWorldNews(function(){
-  console.log("cycleDone callback called!");
-});
+// crawlWorldNews(function(){
+//   console.log("cycleDone callback called!");
+// });
+
+crawl = crawler();
+
+console.log(crawl);
+
+crawl.then(function(result){
+  tempQuestions = result;
+  console.log("crawl resolved")
+  console.log(crawl);
+}, function(err){ console.log("CrawlerPromiseErrors: " + err)});
 
 function isCorrect(word, sess){
   //TODO answer cruncher goes here

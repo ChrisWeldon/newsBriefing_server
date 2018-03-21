@@ -21,7 +21,7 @@ module.exports = function(title, tagger, lexer){
 
       var answers = [];
       for(var i=0; i < data.length; i++){
-        if(data[i] == true){
+        if(data[i] == false){
           answers.push(i);
         }
       }
